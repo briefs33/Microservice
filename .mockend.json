@@ -1,10 +1,7 @@
 {
     "Post": {
         "id": {
-            "int": {
-                "min": 0,
-                "max": 1
-            }
+            "int": {}
         },
         "userId": {
             "int": {
