@@ -1,46 +1,15 @@
 {
-    "Post": {
-        "id": {
-            "integer": [
-                1,
-                2,
-                3
-            ]
-        },
-        "userId": {
-            "integer": [
-                1,
-                1,
-                2
-            ]
-        },
-        "title": {
-            "string": [
-                "title_one",
-                "title_two",
-                "title_three"
-            ]
-        },
-        "body": {
-            "string": [
-                "body_one",
-                "body_two",
-                "body_three"
-            ]
-        }
+  "Post": {
+    "title": {
+      "string": {}
     },
-    "User": {
-        "userId": {
-            "integer": [
-                1,
-                2
-            ]
-        },
-        "name": {
-            "string": [
-                "user_one",
-                "user_two"
-            ]
-        }
+    "body": {
+      "string": {}
     }
+  },
+  "User": {
+    "post": {
+      "hasMany": "Post"
+    }
+  }
 }
