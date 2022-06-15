@@ -8,8 +8,12 @@
             ]
         },
         "userId": {
-            "integer": 1
-            },
+            "integer": [
+                1,
+                1,
+                2
+            ]
+        },
         "title": {
             "string": [
                 "title_one",
@@ -22,6 +26,20 @@
                 "body_one",
                 "body_two",
                 "body_three"
+            ]
+        }
+    },
+    "User": {
+        "userId": {
+            "integer": [
+                1,
+                2
+            ]
+        },
+        "name": {
+            "string": [
+                "user_one",
+                "user_two"
             ]
         }
     }
