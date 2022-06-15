@@ -1,10 +1,10 @@
 {
     "Post": {
         "id": {
-            "integer": {}
+            "int": {}
         },
         "userId": {
-            "integer": {}
+            "int": {}
         },
         "title": {
         "string":
