@@ -18,10 +18,5 @@
         "body":{
             "string": {}
         }
-    },
-    "User": {
-        "post": {
-            "hasMany": "Post"
-        }
     }
 }
