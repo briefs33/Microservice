@@ -1,15 +1,22 @@
 {
-  "Post": {
-    "title": {
-      "string": {}
+    "Post": {
+        "id": {
+            "integer": {}
+        },
+        "userId": {
+            "integer": {}
+        },
+        "title": {
+        "string":
+            {}
+        },
+        "body":{
+            "string": {}
+        }
     },
-    "body": {
-      "string": {}
+    "User": {
+        "post": {
+            "hasMany": "Post"
+        }
     }
-  },
-  "User": {
-    "post": {
-      "hasMany": "Post"
-    }
-  }
 }
