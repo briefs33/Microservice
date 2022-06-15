@@ -2,13 +2,11 @@
     "Post": {
         "id": {
             "int": {
-                "min": 1,
                 "max": 2
             }
         },
         "userId": {
             "int": {
-                "min": 1,
                 "max": 3
             }
         },
