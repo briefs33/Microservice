@@ -4,7 +4,7 @@ import requests
 import json
 
 
-# 16.6 11:00AM - (-15min)
+# 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
 
 app = Flask(__name__)
 
