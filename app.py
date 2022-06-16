@@ -6,22 +6,31 @@ import json
 
 # 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
 # 16.6 1:15PM - 2:45PM (1h 30min) [pridanie zobrazenia príspevkov podla uzivatela]
+# 16.6 6:00PM - 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 # """ Zdroje:
 # https://www.youtube.com/watch?v=qbLc5a9jdXo&ab_channel=CalebCurry
 # https://www.w3schools.com/
-
-
-
-
-
+#
+#
+#
+#
+#
 # """
 
+
+# Init app
 app = Flask(__name__)
-
-@app.route('/')
-def index():
-    return 'Python!'
-
 api_url = 'https://mockend.com/briefs33/Microservice/posts'
 objekt_json = requests.get(api_url)
 # for x, y in objekt_json.items():
@@ -36,6 +45,13 @@ posts_dict = objekt_json.json()
 #     if int(d['id']) == 98:
 #         print('.....Toto!')
 
+
+@app.route('/')
+def index():
+    """ Domovská stránka """
+    return 'Python!'
+
+
 @app.route('/posts')
 def get_posts(id = '', user_id = ''):
     """ Zobrazenie príspevkov
@@ -44,6 +60,7 @@ def get_posts(id = '', user_id = ''):
     # output['posts'] = posts_dict
     # return output
     return {'posts': posts_dict}
+
 
 @app.route('/posts/<id>')
 def get_post(id = '', user_id = ''):
@@ -62,6 +79,7 @@ def get_post(id = '', user_id = ''):
             # return {'post{}'.format(d['id']): {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}}
     return {'Chyba': 404}
 
+
 @app.route('/users/<userId>/posts')
 def get_user_posts(userId):
     """ Zobrazenie príspevku
@@ -73,6 +91,7 @@ def get_user_posts(userId):
         if int(d['userId']) == int(userId): # upravuje poradie príspevkov
              output['post{}'.format(d['id'])] = {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}
     return output
+
 
 # """ --------------------------------------------------------------------------------------------- """
 # @app.route('/posts', methods=['POST'])
@@ -89,6 +108,7 @@ def get_user_posts(userId):
 #     posts_dict += ', {}'.format(thisdict)
 #     return ({'id': id}, thisdict, {"Správa": "Príspevok bol pridaný."})
 
+
 # @app.route('/posts/<id>', methods=['PUT'])
 # def put_post(id, title, body, userId):
 #     """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
@@ -100,6 +120,7 @@ def get_user_posts(userId):
 #             return (d, {"Správa": "Príspevok bol upravený."})
 #     return {'Chyba': "Príspevok som nenašiel!"}
 
+
 # @app.route('/posts/<id>', methods=['PATCH'])
 # def patch_post(id, title, body):
 #     """ Upravenie príspevku - možnosť meniť title a body """
@@ -109,6 +130,7 @@ def get_user_posts(userId):
 #             d["body"] = body
 #             return (d, {"Správa": "Príspevok bol upravený."})
 #     return {'Chyba': "Príspevok som nenašiel!"}
+
 
 # @app.route('/posts/<id>', methods=['DELETE'])
 # def delete_post(id):
