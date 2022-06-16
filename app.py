@@ -5,7 +5,7 @@ import json
 
 
 # 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
-# 16.6 1:15PM - ()
+# 16.6 1:15PM - 2:45PM (1h 30min) [pridanie zobrazenia príspevkov podla uzivatela]
 # """ Zdroje:
 # https://www.youtube.com/watch?v=qbLc5a9jdXo&ab_channel=CalebCurry
 # https://www.w3schools.com/
