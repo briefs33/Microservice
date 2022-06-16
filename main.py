@@ -16,7 +16,8 @@ class MyRequests():
         response = requests.get(self.api_url + id)
         # print(response.json())
         for data in response.json():#['posts']
-            print(data['body'])
+            print(data)
+            # print(data['body'])
         return response.status_code
 
 
@@ -33,17 +34,17 @@ class MyRequests():
 
 
 
-# myRequests = MyRequests()
+myRequests = MyRequests()
 
-# print(
-#     myRequests.get(),
+print(
+    myRequests.get(),
 
-# )
+)
 
 
-app = Flask(__name__)
+# app = Flask(__name__)
 
-@app.route('/')
-def index():
-    return 'Python!'
+# @app.route('/')
+# def index():
+#     return 'Python!'
 
