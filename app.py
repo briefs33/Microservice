@@ -42,7 +42,8 @@ def get_post(id = '', user_id = ''):
     # return output
     for d in posts_dict:
         if int(d['id']) == int(id):
-            return {'post{}'.format(d['id']): {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}}
+            return d
+            # return {'post{}'.format(d['id']): {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}}
     return {'Chyba': 404}
 
 # get_post(5)
