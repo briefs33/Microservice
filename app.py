@@ -1,5 +1,4 @@
 
-from crypt import methods
 from flask import Flask
 import requests
 import json
@@ -7,15 +6,15 @@ import json
 
 # 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
 # 16.6 1:15PM - ()
-""" Zdroje:
-https://www.youtube.com/watch?v=qbLc5a9jdXo&ab_channel=CalebCurry
-https://www.w3schools.com/
+# """ Zdroje:
+# https://www.youtube.com/watch?v=qbLc5a9jdXo&ab_channel=CalebCurry
+# https://www.w3schools.com/
 
 
 
 
 
-"""
+# """
 
 app = Flask(__name__)
 
@@ -63,50 +62,62 @@ def get_post(id = '', user_id = ''):
             # return {'post{}'.format(d['id']): {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}}
     return {'Chyba': 404}
 
-""" --------------------------------------------------------------------------------------------- """
-@app.route('/posts', methods=['POST'])
-def add_post(title, body, userId):
-    """ Pridanie príspevku - potrebné validovať userID pomocou externej API """
-    # post = Post(title=request.json['title'], body=request.json['body'], userId=request.json['userId'])
-    id = int(posts_dict[-1]['id']) + 1
-    thisdict = {
-        "id": id,
-        "title": title,
-        "body": body,
-        "userId": userId
-    }
-    posts_dict += ', {}'.format(thisdict)
-    return ({'id': id}, thisdict, {"Správa": "Príspevok bol pridaný."})
-
-@app.route('/posts/<id>', methods=['PUT'])
-def put_post(id, title, body, userId):
-    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+@app.route('/users/<userId>/posts')
+def get_user_posts(userId):
+    """ Zobrazenie príspevku
+    - na základe id alebo userId
+    - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
+      (platné iba pre vyhľadávanie pomocou id príspevku) """
+    output = {}
     for d in posts_dict:
-        if int(d['id']) == int(id):
-            d["title"] = title
-            d["body"] = body
-            d["userId"] = userId
-            return (d, {"Správa": "Príspevok bol upravený."})
-    return {'Chyba': "Príspevok som nenašiel!"}
+        if int(d['userId']) == int(userId): # upravuje poradie príspevkov
+             output['post{}'.format(d['id'])] = {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}
+    return output
 
-@app.route('/posts/<id>', methods=['PATCH'])
-def patch_post(id, title, body):
-    """ Upravenie príspevku - možnosť meniť title a body """
-    for d in posts_dict:
-        if int(d['id']) == int(id):
-            d["title"] = title
-            d["body"] = body
-            return (d, {"Správa": "Príspevok bol upravený."})
-    return {'Chyba': "Príspevok som nenašiel!"}
+# """ --------------------------------------------------------------------------------------------- """
+# @app.route('/posts', methods=['POST'])
+# def add_post(title, body, userId):
+#     """ Pridanie príspevku - potrebné validovať userID pomocou externej API """
+#     # post = Post(title=request.json['title'], body=request.json['body'], userId=request.json['userId'])
+#     id = int(posts_dict[-1]['id']) + 1
+#     thisdict = {
+#         "id": id,
+#         "title": title,
+#         "body": body,
+#         "userId": userId
+#     }
+#     posts_dict += ', {}'.format(thisdict)
+#     return ({'id': id}, thisdict, {"Správa": "Príspevok bol pridaný."})
 
-@app.route('/posts/<id>', methods=['DELETE'])
-def delete_post(id):
-    """ Odstránenie príspevku """
-    post = get_post(id)
-    if post == {'Chyba': 404}:
-        return {'Chyba': "Príspevok som nenašiel!"}
-    posts_dict.delete(id)
-    return {"Správa": "Príspevok bol odstránený."}
+# @app.route('/posts/<id>', methods=['PUT'])
+# def put_post(id, title, body, userId):
+#     """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+#     for d in posts_dict:
+#         if int(d['id']) == int(id):
+#             d["title"] = title
+#             d["body"] = body
+#             d["userId"] = userId
+#             return (d, {"Správa": "Príspevok bol upravený."})
+#     return {'Chyba': "Príspevok som nenašiel!"}
+
+# @app.route('/posts/<id>', methods=['PATCH'])
+# def patch_post(id, title, body):
+#     """ Upravenie príspevku - možnosť meniť title a body """
+#     for d in posts_dict:
+#         if int(d['id']) == int(id):
+#             d["title"] = title
+#             d["body"] = body
+#             return (d, {"Správa": "Príspevok bol upravený."})
+#     return {'Chyba': "Príspevok som nenašiel!"}
+
+# @app.route('/posts/<id>', methods=['DELETE'])
+# def delete_post(id):
+#     """ Odstránenie príspevku """
+#     post = get_post(id)
+#     if post == {'Chyba': 404}:
+#         return {'Chyba': "Príspevok som nenašiel!"}
+#     posts_dict.delete(id)
+#     return {"Správa": "Príspevok bol odstránený."}
 
 
 
