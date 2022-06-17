@@ -1,9 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <ul>
-        {% for user in users %}
-            <li>{{ user }}</li>
-        {% endfor %}
-    </ul>
+    {% for user in users %}
+        <a href="posts?userId={{ user['id'] }}">{{ user["name"] }}</a>
+    {% endfor %}
 {% endblock %}

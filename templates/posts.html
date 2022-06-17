@@ -1,9 +1,19 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <ul>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Názov článku</th>
+            <th>Obsah článku</th>
+        </tr>
+
         {% for post in posts %}
-            <li>{{ post }}</li>
+            <tr>
+                <td>{{ post["id"] }}</td>
+                <td>{{ post["title"] }}</td>
+                <td>{{ post["body"][:150] }}</td>
+            </tr>
         {% endfor %}
-    </ul>
+    </table>
 {% endblock %}
