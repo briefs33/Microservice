@@ -2,6 +2,7 @@
 
 {% block body %}
     {% for user in users %}
-        <a href="posts?userId={{ user['id'] }}">{{ user["name"] }}</a>
+        <!--a href="posts?userId={{ user['id'] }}">{{ user["name"] }}</a-->
+        <a href="posts?id={{ user['id'] }}">{{ user["name"] }}</a>
     {% endfor %}
 {% endblock %}

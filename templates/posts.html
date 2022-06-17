@@ -1,19 +1,11 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Názov článku</th>
-            <th>Obsah článku</th>
-        </tr>
-
-        {% for post in posts %}
-            <tr>
-                <td>{{ post["id"] }}</td>
-                <td>{{ post["title"] }}</td>
-                <td>{{ post["body"][:150] }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    {% for post in posts %}
+        <div>
+            <p>{{ post["id"] }}</p>
+            <a href="posts?id={{ post['id'] }}">{{ post["title"] }}</a>
+            <p>{{ post["body"][:150] }}</p>
+        </div>
+    {% endfor %}
 {% endblock %}

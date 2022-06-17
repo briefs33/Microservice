@@ -1,9 +1,9 @@
 from flask import Flask, redirect, render_template, request, jsonify
 import requests
 import json
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_marshmallow import Marshmallow
-# import os
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
+import os
 
 
 # 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
@@ -25,86 +25,71 @@ import json
 # https://www.w3schools.com/
 # https://www.youtube.com/watch?v=PTZiDnuC86g&ab_channel=TraversyMedia
 # https://www.youtube.com/watch?v=zdgYw-3tzfI&ab_channel=freeCodeCamp.org
-#
-#
+# https://www.hwlibre.com/sk/orm-object-relational-mapping/
+# https://www.sqlalchemy.org/
 #
 # """
 
 
 # Init app
 app = Flask(__name__)
-# basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+# Mockend
 posts_objekt_json, users_objekt_json = [], []
 api_url = 'https://mockend.com/briefs33/Microservice'
 posts_objekt_json = requests.get(api_url + '/posts')
 users_objekt_json = requests.get(api_url + '/users')
-# for x, y in objekt_json.items():
-#     print(x, y)
-# posts_dict = objekt_json.json()
 posts_dict = posts_objekt_json.json()
 users_dict = users_objekt_json.json()
 
-# id = int(users_dict[-1]['id'])
-# thisdict = {
-#     "id": id,
-#     "title": "post101",
-#     "body": "pridaný post101",
-# }
-# # posts_dict += ', {}'.format(thisdict) # posts_dict.append(thisdict)
-
-# posts_dict.append(thisdict)
-
-# for d in posts_dict:
-# # #     # for a, b in x.items():
-# # #     #     print(a, b)
-#     print({'id': d['id'], 'title': d['title'], 'body': d['body']})
-# for d in users_dict:
-# # #     # for a, b in x.items():
-# # #     #     print(a, b)
-#     print({'id': d['id'], 'name': d['name']})
-
-# #     print({'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']})
-#     print(d['id'], int(d['id']), 5)
-#     if int(d['id']) == 98:
-#         print('.....Toto!')
 
 # Database
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Init db
-# db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 
 # Init ma
-# ma = Marshmallow(app)
+ma = Marshmallow(app)
 
-# # Post Class/Model
-# class Post(db.Model):
-#     id = db.Column(db.Integer, primary_key = True)
-#     title = db.Column(db.String(120))
-#     body = db.Column(db.String(600))
-#     userId = db.Column(db.Integer, foreign_key = True)
+# Post Class/Model
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(120))
+    body = db.Column(db.String(600))
+    userId = db.Column(db.Integer, foreign_key = True)
 
-#     def __init__(self) -> None:
-#         super().__init__()
-#     # def __init__(self, title, body, userId)
-#         # self.title = title
-#         # self.body = body
-#         # self.userId = userId
+    def __init__(self) -> None:
+        super().__init__()
+    # def __init__(self, title, body, userId)
+        # self.title = title
+        # self.body = body
+        # self.userId = userId
 
-# # User Class/Model
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key = True)
-#     name = db.Column(db.String(60))
+# User Class/Model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(60))
 
-# # Post Schema
-# class PostSchema(ma.Schema):
-#     class Meta:
-#         fields = ('id', 'title', 'body', 'userId')
+# Post Schema
+class PostSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'title', 'body', 'userId')
 
-# # Init schema
-# post_schema = PostSchema(strict = True)
-# posts_schema = PostSchema(many = True, strict = True)
+# User Schema
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name')
+
+# Init schema
+post_schema = PostSchema(strict = True)
+posts_schema = PostSchema(many = True, strict = True)
+user_schema = UserSchema(strict = True)
+users_schema = UserSchema(many = True, strict = True)
+
+
 # """
 # python cls:
 #     >>> from app import db
@@ -115,8 +100,6 @@ users_dict = users_objekt_json.json()
 # Run Server
 # if __name__ == '__main__':
 #     app.run(debug = True)
-
-
 
 
 @app.route('/')
@@ -148,7 +131,7 @@ def get_posts():
     elif not userId=="None":
         for d in posts_dict:
             if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-                output['post{}'.format(d['id'])] = d
+                output['post{}'.format(d['userId'])] = d
 
         # posts = Post.query.get(userId)
         # result = posts_schema.dump(posts)
