@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <h1>Registrácia užívateľa</h1>
+    <form action="/posts" method="post">
+        <input autocomplete="off" autofocus name="title" placeholder="Názov článku" type="text">
+        <textarea name="body" placeholder="Článok" rows="12" cols="60"></textarea>
+        <select name="userId">
+            <option disabled selected value="">Autor</option>
+        {% for user in users %}
+            <option value="{{ user['id'] }}">{{ user["name"] }}</option>
+        {% endfor %}
+        <input type="submit" value="Uložiť">
+    </form>
+
+    <script>
+        document.querySelector('form').onsubmit = function() {
+            if (!document.querySelector('input').value) {
+                alert("Zadajte názov článku!");
+                return false;
+            }
+            else if (!document.querySelector('textarea').value) {
+                alert("Napíšte článok!");
+                return false;
+            }
+            else if (!document.querySelector('select').value) {
+                alert("Zvolte autora!");
+                return false;
+            }
+            return true;
+        };
+    </script>
+{% endblock %}
