@@ -49,7 +49,7 @@ posts_dict = objekt_json.json()
 for d in posts_dict:
 # #     # for a, b in x.items():
 # #     #     print(a, b)
-    print({'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']})
+    print({'id': d['id'], 'title': d['title'], 'body': d['body']})
 # #     print({'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']})
 #     print(d['id'], int(d['id']), 5)
 #     if int(d['id']) == 98:
