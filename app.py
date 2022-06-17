@@ -1,7 +1,3 @@
-
-from dataclasses import field
-from email.policy import strict
-from turtle import title
 from flask import Flask, redirect, render_template, request, jsonify
 import requests
 import json
@@ -127,8 +123,6 @@ users_dict = users_objekt_json.json()
 def index():
     """ Domovská stránka """
     message = request.args.get("message", "None")
-    # if not message:
-    #     message = "None"
     return render_template("index.html", message = message)
 
 
@@ -139,7 +133,7 @@ def get_posts():
     - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
       (platné iba pre vyhľadávanie pomocou id príspevku) """
     id = request.args.get("id", "None")
-    userId = request.args.get("id", "None")
+    userId = request.args.get("userId", "None")
     output = {}
 
     if not id=="None":
@@ -170,6 +164,19 @@ def get_posts():
 @app.route('/users', methods = ['GET'])
 def get_users():
     """ Zobrazenie užívateľov """
+    userId = request.args.get("userId", "None")
+    output = {}
+
+    if not userId=="None":
+        for d in posts_dict:
+            if int(d['userId']) == int(userId): # upravuje poradie príspevkov
+                output['post{}'.format(d['id'])] = d
+
+        # posts = User.query.get(userId)
+        # result = posts_schema.dump(posts)
+        # return jsonify(result.data)
+        return render_template("user.html", user = output)
+
     # users = User.query.all()
     # result = users_schema.dump(all_users)
     # return jsonify(result.data)
@@ -269,7 +276,7 @@ def patch_post(id, title, body):
 @app.route('/posts/<id>', methods=['DELETE'])
 def delete_post(id):
     """ Odstránenie príspevku """
-    post = get_post(id)
+    post = get_posts(id)
     if post == {'Chyba': 404}:
         return {'Chyba': "Príspevok som nenašiel!"}
     posts_dict.pop(id) # put_post -> for d in posts_dict: if int(d['id']) == int(id):
