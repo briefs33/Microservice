@@ -12,10 +12,10 @@ import json
 
 # 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
 # 16.6 1:15PM - 2:45PM (1h 30min) [pridanie zobrazenia príspevkov podla uzivatela]
-# 16.6 6:00PM - 7:15 (1h 15 min)
-# 17.6 8:00AM - 11:30 (3h 30min +- 30min)
-# 17.6 12:30PM - 
-#
+# 16.6 6:00PM - 7:15 (1h 15min)
+# 17.6 8:00AM - 11:30 (3h 30min -30min)
+# 17.6 12:30PM - 13:30 (1h)
+# 17.6 2:30PM - ()
 #
 #
 #
@@ -134,54 +134,46 @@ def index():
 
 @app.route('/posts', methods = ['GET'])
 def get_posts():
-    """ Zobrazenie príspevkov
-    - na základe id alebo userId """
-    # output = {}
-    # output['posts'] = posts_dict
-    # return output
-    return {'posts': posts_dict}
+    """ Zobrazenie príspevkov alebo príspevku
+    - na základe id alebo userId
+    - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
+      (platné iba pre vyhľadávanie pomocou id príspevku) """
+    id = request.args.get("id", "None")
+    userId = request.args.get("id", "None")
+    output = {}
+
+    if not id=="None":
+        for d in posts_dict:
+            if int(d['id']) == int(id):
+                output = d
+                break
+
+        # post = Post.query.get(id)
+        # return post_schema.jsonify(post)
+        return render_template("post.html", post = output)
+    elif not userId=="None":
+        for d in posts_dict:
+            if int(d['userId']) == int(userId): # upravuje poradie príspevkov
+                output['post{}'.format(d['id'])] = d
+
+        # posts = Post.query.get(userId)
+        # result = posts_schema.dump(posts)
+        # return jsonify(result.data)
+        return render_template("posts.html", posts = output)
+
     # posts = Post.query.all()
     # result = posts_schema.dump(all_posts)
     # return jsonify(result.data)
+    return render_template("posts.html", posts = posts_dict)
 
 
-@app.route('/posts/<id>', methods = ['GET'])
-def get_post(id):
-    """ Zobrazenie príspevku
-    - na základe id
-    - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
-      (platné iba pre vyhľadávanie pomocou id príspevku) """
-    # output = {}
-    # for d in posts_dict:
-    #     if int(d['id']) == int(id):
-    #         output['post{}'.format(d['id'])] = {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}
-    # return output
-    for d in posts_dict:
-        if int(d['id']) == int(id):
-            return d
-            # return {'post{}'.format(d['id']): {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}}
-
-    # post = Post.query.get(id)
-    # return post_schema.jsonify(post)
-    return {'Chyba': 404}
-
-
-@app.route('/users/<userId>/posts', methods = ['GET'])
-def get_user_posts(userId):
-    """ Zobrazenie príspevku
-    - na základe userId
-    - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
-      (platné iba pre vyhľadávanie pomocou id príspevku) """
-    # userId = request.args.get("userId")
-    output = {}
-    for d in posts_dict:
-        if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-             output['post{}'.format(d['id'])] = d
-
-    # posts = Post.query.get(userId)
-    # result = posts_schema.dump(posts)
+@app.route('/users', methods = ['GET'])
+def get_users():
+    """ Zobrazenie užívateľov """
+    # users = User.query.all()
+    # result = users_schema.dump(all_users)
     # return jsonify(result.data)
-    return output
+    return render_template("users.html", users = users_dict)
 
 
 @app.route('/posts', methods=['POST'])
@@ -190,7 +182,7 @@ def add_post():
     id = int(posts_dict[-1]['id']) + 1
     title = request.form.get("title")
     body = request.form.get("body")
-    userId = request.form.get("userId")
+    userId = request.args.get("userId")
 
     thisdict = {
         "id": id,
@@ -199,7 +191,7 @@ def add_post():
         "userId": userId
     }
 
-    if not title or not body:
+    if not title or not body or not userId:
        return render_template("failure.html")
 
     # new_post = Post(title, body, userId)
@@ -208,7 +200,6 @@ def add_post():
     # db.session.commit()
     # 
     # return post_schema.jsonify(new_post)
-
     posts_dict.append(thisdict)
     return redirect("/posts")
 
@@ -233,7 +224,6 @@ def add_user():
     # db.session.commit()
     # 
     # return user_schema.jsonify(new_user)
-
     users_dict.append(thisdict)
     return redirect("/users")
 
