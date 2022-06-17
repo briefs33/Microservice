@@ -32,10 +32,7 @@
             }
         },
         "userId": {
-            "int": {
-                "min": 0,
-                "max": 10
-            }
+            "belongsTo": "User"
         },
         "title": {
             "string": {}
