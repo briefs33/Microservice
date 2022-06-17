@@ -211,6 +211,11 @@ def add_post():
     return redirect("/posts")
 
 
+@app.route('/registration', methods=['GET'])
+def registration():
+    return render_template("registration.html")
+
+
 @app.route('/register', methods=['POST'])
 def add_user():
     """ Pridanie užívateľa - potrebné validovať userID pomocou externej API """
