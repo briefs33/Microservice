@@ -24,14 +24,7 @@
             "belongsTo": "User"
         },
         "name": {
-            "string": [
-                "Thor",
-                "Loki",
-                "Sasha",
-                "Sam",
-                "Joe",
-                "Arnold"
-              ]
+            "string": {}
         }
     }
 }
