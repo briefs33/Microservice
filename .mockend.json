@@ -21,7 +21,7 @@
             ]
         },
         "postId": {
-            "belongsTo": "Post"
+            "hasMany": "Post"
         }
     },
     "Post": {
@@ -32,7 +32,7 @@
             }
         },
         "userId": {
-            "hasMany": "User"
+            "belongsTo": "User"
         },
         "title": {
             "string": {}
