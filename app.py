@@ -48,20 +48,20 @@ users_objekt_json = requests.get(api_url + '/users')
 posts_dict = posts_objekt_json.json()
 users_dict = users_objekt_json.json()
 
-id = int(users_dict[-1]['id'])
-thisdict = {
-    "id": id,
-    "title": "post101",
-    "body": "pridaný post101",
-}
-# posts_dict += ', {}'.format(thisdict) # posts_dict.append(thisdict)
+# id = int(users_dict[-1]['id'])
+# thisdict = {
+#     "id": id,
+#     "title": "post101",
+#     "body": "pridaný post101",
+# }
+# # posts_dict += ', {}'.format(thisdict) # posts_dict.append(thisdict)
 
-posts_dict.append(thisdict)
+# posts_dict.append(thisdict)
 
-for d in posts_dict:
-# #     # for a, b in x.items():
-# #     #     print(a, b)
-    print({'id': d['id'], 'title': d['title'], 'body': d['body']})
+# for d in posts_dict:
+# # #     # for a, b in x.items():
+# # #     #     print(a, b)
+#     print({'id': d['id'], 'title': d['title'], 'body': d['body']})
 # for d in users_dict:
 # # #     # for a, b in x.items():
 # # #     #     print(a, b)
@@ -204,7 +204,7 @@ def add_post(title, body, userId):
     # 
     # return post_schema.jsonify(new_post)
     # 
-    posts_dict += ', {}'.format(thisdict) # posts_dict.append(thisdict)
+    posts_dict.append(thisdict)
     return ({'id': id}, thisdict, {"Správa": "Príspevok bol pridaný."})
 
 
@@ -227,7 +227,7 @@ def add_user(name):
     # 
     # return user_schema.jsonify(new_user)
     # 
-    users_dict += ', {}'.format(thisdict) # users_dict.append(thisdict)
+    users_dict.append(thisdict)
     return ({'id': id}, thisdict, {"Správa": "Užívateľ bol pridaný."})
 
 
