@@ -3,8 +3,7 @@
         "userId": {
             "int": {
                 "min": 0,
-                "max": 10,
-                "hasMany": "Post"
+                "max": 10
             }
         },
         "name": {

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<html lang="sk">
+    <head>
+        <meta name="viewport" content="initial-scale = 1, width = device-width">
+        <title>API</title>
+    </head>
+    <body>
+        Message: {{ message }}
+        <h1>Registrácia užívateľa</h1>
+        <form action="/users/register" method="post">
+            <input name="name" placeholder="Meno" type="text">
+            <input type="submit" value="Registrácia">
+        </form>
+    </body>
+</html>
