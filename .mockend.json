@@ -1,6 +1,6 @@
 {
     "User": {
-        "id": {
+        "userId": {
             "int": {
                 "min": 0,
                 "max": 10
