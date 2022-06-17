@@ -20,10 +20,8 @@
                 "Eva"
             ]
         },
-        "post": {
-            "userComments": {
+        "postId": {
             "hasMany": "Post"
-            }
         }
     },
     "Post": {
