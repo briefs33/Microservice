@@ -12,7 +12,7 @@ import os
 # 17.6 8:00AM - 11:30 (3h 30min -30min)
 # 17.6 12:30PM - 13:30 (1h)
 # 17.6 2:30PM - 5:00PM (2h 30min -15min)
-# 17.6 PM - PM ()
+# 17.6 6:00PM? - PM ()
 #
 #
 #
@@ -27,6 +27,22 @@ import os
 # https://www.youtube.com/watch?v=zdgYw-3tzfI&ab_channel=freeCodeCamp.org
 # https://www.hwlibre.com/sk/orm-object-relational-mapping/
 # https://www.sqlalchemy.org/
+# https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 # """
 
@@ -54,12 +70,20 @@ db = SQLAlchemy(app)
 # Init ma
 ma = Marshmallow(app)
 
+# User Class/Model
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(60))
+    children = db.relationship("Post")
+
 # Post Class/Model
 class Post(db.Model):
+    __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(120))
     body = db.Column(db.String(600))
-    userId = db.Column(db.Integer, foreign_key = True)
+    userId = db.Column(db.Integer, db.ForeignKey("users.id"))
 
     def __init__(self) -> None:
         super().__init__()
@@ -68,27 +92,25 @@ class Post(db.Model):
         # self.body = body
         # self.userId = userId
 
-# User Class/Model
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(60))
+# User Schema
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name')
 
 # Post Schema
 class PostSchema(ma.Schema):
     class Meta:
         fields = ('id', 'title', 'body', 'userId')
 
-# User Schema
-class UserSchema(ma.Schema):
-    class Meta:
-        fields = ('id', 'name')
-
 # Init schema
-post_schema = PostSchema(strict = True)
-posts_schema = PostSchema(many = True, strict = True)
-user_schema = UserSchema(strict = True)
-users_schema = UserSchema(many = True, strict = True)
-
+# user_schema = UserSchema(strict = True)
+# users_schema = UserSchema(many = True, strict = True)
+# post_schema = PostSchema(strict = True)
+# posts_schema = PostSchema(many = True, strict = True)
+user_schema = UserSchema()
+users_schema = UserSchema(many = True)
+post_schema = PostSchema()
+posts_schema = PostSchema(many = True)
 
 # """
 # python cls:
