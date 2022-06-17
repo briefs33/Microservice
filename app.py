@@ -12,7 +12,7 @@ import os
 # 17.6 8:00AM - 11:30 (3h 30min -30min)
 # 17.6 12:30PM - 13:30 (1h)
 # 17.6 2:30PM - 5:00PM (2h 30min -15min)
-# 17.6 6:00PM? - PM ()
+# 17.6 6:00PM? - PM (   -30min)
 #
 #
 #
@@ -28,7 +28,7 @@ import os
 # https://www.hwlibre.com/sk/orm-object-relational-mapping/
 # https://www.sqlalchemy.org/
 # https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html
-#
+# https://marshmallow.readthedocs.io/en/stable/quickstart.html
 #
 #
 #
@@ -103,10 +103,6 @@ class PostSchema(ma.Schema):
         fields = ('id', 'title', 'body', 'userId')
 
 # Init schema
-# user_schema = UserSchema(strict = True)
-# users_schema = UserSchema(many = True, strict = True)
-# post_schema = PostSchema(strict = True)
-# posts_schema = PostSchema(many = True, strict = True)
 user_schema = UserSchema()
 users_schema = UserSchema(many = True)
 post_schema = PostSchema()
@@ -188,13 +184,18 @@ def get_users():
     return render_template("users.html", users = users_dict)
 
 
+@app.route('/new_post', methods=['GET'])
+def new_post():
+    return render_template("new_post.html", users = users_dict)
+
+
 @app.route('/posts', methods=['POST'])
 def add_post():
     """ Pridanie príspevku - potrebné validovať userID pomocou externej API """
     id = int(posts_dict[-1]['id']) + 1
     title = request.form.get("title")
     body = request.form.get("body")
-    userId = request.args.get("userId")
+    userId = request.form.get("userId")
 
     thisdict = {
         "id": id,
