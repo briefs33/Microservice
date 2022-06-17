@@ -39,17 +39,34 @@ import json
 app = Flask(__name__)
 # basedir = os.path.abspath(os.path.dirname(__file__))
 
-api_url = 'https://mockend.com/briefs33/Microservice/posts'
-objekt_json = requests.get(api_url)
+api_url = 'https://mockend.com/briefs33/Microservice'
+posts_objekt_json = requests.get(api_url + '/posts')
+users_objekt_json = requests.get(api_url + '/users')
 # for x, y in objekt_json.items():
 #     print(x, y)
-posts_dict = objekt_json.json()
-# posts_dict = objekt_json['Posts'].json()
-# users_dict = objekt_json['Users'].json()
+# posts_dict = objekt_json.json()
+posts_dict = posts_objekt_json.json()
+users_dict = users_objekt_json.json()
+
+id = int(users_dict[-1]['id'])
+thisdict = {
+    "id": id,
+    "title": "post101",
+    "body": "pridaný post101",
+}
+# posts_dict += ', {}'.format(thisdict) # posts_dict.append(thisdict)
+
+posts_dict.append(thisdict)
+
 for d in posts_dict:
 # #     # for a, b in x.items():
 # #     #     print(a, b)
     print({'id': d['id'], 'title': d['title'], 'body': d['body']})
+# for d in users_dict:
+# # #     # for a, b in x.items():
+# # #     #     print(a, b)
+#     print({'id': d['id'], 'name': d['name']})
+
 # #     print({'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']})
 #     print(d['id'], int(d['id']), 5)
 #     if int(d['id']) == 98:
