@@ -1,4 +1,26 @@
 {
+    "User": {
+        "userId": {
+            "int": {
+                "min": 0,
+                "max": 10
+            }
+        },
+        "name": {
+            "string": [
+                "Thor",
+                "Loki",
+                "Sasha",
+                "Sam",
+                "Joe",
+                "Arnold",
+                "Dana",
+                "Jana",
+                "Lena",
+                "Eva"
+            ]
+        }
+    },
     "Post": {
         "id": {
             "int": {
@@ -7,23 +29,12 @@
             }
         },
         "userId": {
-            "int": {
-                "min": 0,
-                "max": 5
-            }
+            "belongsTo": "User"
         },
         "title": {
             "string": {}
         },
         "body":{
-            "string": {}
-        }
-    },
-    "User": {
-        "userId": {
-            "belongsTo": "User"
-        },
-        "name": {
             "string": {}
         }
     }
