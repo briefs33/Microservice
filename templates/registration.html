@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <h1>Registrácia užívateľa</h1>
+    <form action="/register" method="post">
+        <input autocomplete="off" autofocus name="name" placeholder="Meno" type="text">
+        <input type="submit" value="Registrácia">
+    </form>
+
+    <script>
+        document.querySelector('form').onsubmit = function() {
+            if (!document.querySelector('input').value) {
+                alert("Zadajte meno!");
+                return false;
+            }
+            return true;
+        };
+    </script>
+{% endblock %}
