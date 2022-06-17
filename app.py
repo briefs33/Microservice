@@ -2,7 +2,7 @@
 from dataclasses import field
 from email.policy import strict
 from turtle import title
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 import requests
 import json
 # from flask_sqlalchemy import SQLAlchemy
@@ -12,8 +12,8 @@ import json
 
 # 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
 # 16.6 1:15PM - 2:45PM (1h 30min) [pridanie zobrazenia príspevkov podla uzivatela]
-# 16.6 6:00PM - 
-#
+# 16.6 6:00PM - 7:15 (1h 15 min)
+# 17.6 8:00AM - ()
 #
 #
 #
@@ -28,7 +28,7 @@ import json
 # https://www.youtube.com/watch?v=qbLc5a9jdXo&ab_channel=CalebCurry
 # https://www.w3schools.com/
 # https://www.youtube.com/watch?v=PTZiDnuC86g&ab_channel=TraversyMedia
-#
+# https://www.youtube.com/watch?v=zdgYw-3tzfI&ab_channel=freeCodeCamp.org
 #
 #
 #
@@ -44,10 +44,12 @@ objekt_json = requests.get(api_url)
 # for x, y in objekt_json.items():
 #     print(x, y)
 posts_dict = objekt_json.json()
-# for d in posts_dict:
+# posts_dict = objekt_json['Posts'].json()
+# users_dict = objekt_json['Users'].json()
+for d in posts_dict:
 # #     # for a, b in x.items():
 # #     #     print(a, b)
-# #     # print({'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']})
+    print({'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']})
 # #     print({'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']})
 #     print(d['id'], int(d['id']), 5)
 #     if int(d['id']) == 98:
@@ -107,7 +109,10 @@ posts_dict = objekt_json.json()
 @app.route('/')
 def index():
     """ Domovská stránka """
-    return 'Python!'
+    message = request.args.get("message", "None")
+    # if not message:
+    #     message = "None"
+    return render_template("index.html", message = message)
 
 
 @app.route('/posts', methods = ['GET'])
@@ -143,7 +148,7 @@ def get_post(id):
     # return post_schema.jsonify(post)
 
 
-@app.route('/users/<userId>/posts')
+@app.route('/users/<userId>/posts', methods = ['GET'])
 def get_user_posts(userId):
     """ Zobrazenie príspevku
     - na základe id alebo userId
@@ -184,6 +189,29 @@ def add_post(title, body, userId):
     # 
     posts_dict += ', {}'.format(thisdict) # posts_dict.append(thisdict)
     return ({'id': id}, thisdict, {"Správa": "Príspevok bol pridaný."})
+
+
+@app.route('/users/register', methods=['POST'])
+def add_user(name):
+# def add_post():
+    """ Pridanie príspevku - potrebné validovať userID pomocou externej API """
+    # post = Post(title=request.json['title'], body=request.json['body'], userId=request.json['userId'])
+    id = int(users_dict[-1]['id']) + 1
+    thisdict = {
+        "id": id,
+        "name": name
+    }
+    # name = request.json['name']
+    #
+    # new_user = User(name)
+    #
+    # db.session.add(new_user)
+    # db.session.commit()
+    # 
+    # return user_schema.jsonify(new_user)
+    # 
+    users_dict += ', {}'.format(thisdict) # users_dict.append(thisdict)
+    return ({'id': id}, thisdict, {"Správa": "Užívateľ bol pridaný."})
 
 
 @app.route('/posts/<id>', methods=['PUT'])
