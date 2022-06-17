@@ -2,7 +2,7 @@
 from dataclasses import field
 from email.policy import strict
 from turtle import title
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, redirect, render_template, request, jsonify
 import requests
 import json
 # from flask_sqlalchemy import SQLAlchemy
@@ -13,8 +13,8 @@ import json
 # 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
 # 16.6 1:15PM - 2:45PM (1h 30min) [pridanie zobrazenia príspevkov podla uzivatela]
 # 16.6 6:00PM - 7:15 (1h 15 min)
-# 17.6 8:00AM - ()
-#
+# 17.6 8:00AM - 11:30 (3h 30min +- 30min)
+# 17.6 12:30PM - 
 #
 #
 #
@@ -38,7 +38,7 @@ import json
 # Init app
 app = Flask(__name__)
 # basedir = os.path.abspath(os.path.dirname(__file__))
-
+posts_objekt_json, users_objekt_json = [], []
 api_url = 'https://mockend.com/briefs33/Microservice'
 posts_objekt_json = requests.get(api_url + '/posts')
 users_objekt_json = requests.get(api_url + '/users')
@@ -148,7 +148,7 @@ def get_posts():
 @app.route('/posts/<id>', methods = ['GET'])
 def get_post(id):
     """ Zobrazenie príspevku
-    - na základe id alebo userId
+    - na základe id
     - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
       (platné iba pre vyhľadávanie pomocou id príspevku) """
     # output = {}
@@ -160,75 +160,82 @@ def get_post(id):
         if int(d['id']) == int(id):
             return d
             # return {'post{}'.format(d['id']): {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}}
-    return {'Chyba': 404}
+
     # post = Post.query.get(id)
     # return post_schema.jsonify(post)
+    return {'Chyba': 404}
 
 
 @app.route('/users/<userId>/posts', methods = ['GET'])
 def get_user_posts(userId):
     """ Zobrazenie príspevku
-    - na základe id alebo userId
+    - na základe userId
     - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
       (platné iba pre vyhľadávanie pomocou id príspevku) """
+    # userId = request.args.get("userId")
     output = {}
     for d in posts_dict:
         if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-             output['post{}'.format(d['id'])] = {'id': d['id'], 'title': d['title'], 'body': d['body'], 'userId': d['userId']}
-    return output
+             output['post{}'.format(d['id'])] = d
+
     # posts = Post.query.get(userId)
     # result = posts_schema.dump(posts)
     # return jsonify(result.data)
+    return output
 
 
 @app.route('/posts', methods=['POST'])
-def add_post(title, body, userId):
-# def add_post():
+def add_post():
     """ Pridanie príspevku - potrebné validovať userID pomocou externej API """
-    # post = Post(title=request.json['title'], body=request.json['body'], userId=request.json['userId'])
     id = int(posts_dict[-1]['id']) + 1
+    title = request.form.get("title")
+    body = request.form.get("body")
+    userId = request.form.get("userId")
+
     thisdict = {
         "id": id,
         "title": title,
         "body": body,
         "userId": userId
     }
-    # title = request.json['title']
-    # body = request.json['body']
-    # userId = request.json['userId']
-    #
+
+    if not title or not body:
+       return render_template("failure.html")
+
     # new_post = Post(title, body, userId)
     #
     # db.session.add(new_post)
     # db.session.commit()
     # 
     # return post_schema.jsonify(new_post)
-    # 
+
     posts_dict.append(thisdict)
-    return ({'id': id}, thisdict, {"Správa": "Príspevok bol pridaný."})
+    return redirect("/posts")
 
 
-@app.route('/users/register', methods=['POST'])
-def add_user(name):
-# def add_post():
-    """ Pridanie príspevku - potrebné validovať userID pomocou externej API """
-    # post = Post(title=request.json['title'], body=request.json['body'], userId=request.json['userId'])
-    id = int(users_dict[-1]['id']) + 1
+@app.route('/register', methods=['POST'])
+def add_user():
+    """ Pridanie užívateľa - potrebné validovať userID pomocou externej API """
+    userId = int(users_dict[-1]['id']) + 1
+    name = request.form.get("name")
+
     thisdict = {
-        "id": id,
+        "id": userId,
         "name": name
     }
-    # name = request.json['name']
-    #
+
+    if not name:
+        return render_template("failure.html")
+
     # new_user = User(name)
     #
     # db.session.add(new_user)
     # db.session.commit()
     # 
     # return user_schema.jsonify(new_user)
-    # 
+
     users_dict.append(thisdict)
-    return ({'id': id}, thisdict, {"Správa": "Užívateľ bol pridaný."})
+    return redirect("/users")
 
 
 @app.route('/posts/<id>', methods=['PUT'])
@@ -241,7 +248,7 @@ def put_post(id, title, body, userId):
             d["body"] = body
             d["userId"] = userId
             return (d, {"Správa": "Príspevok bol upravený."})
-    return {'Chyba': "Príspevok som nenašiel!"}
+
     # post = Post.query.get(id)
     #
     # title = request.json['title']
@@ -255,17 +262,18 @@ def put_post(id, title, body, userId):
     # db.session.commit()
     # 
     # return post_schema.jsonify(post)
-    # 
+    return {'Chyba': "Príspevok som nenašiel!"}
 
-# @app.route('/posts/<id>', methods=['PATCH'])
-# def patch_post(id, title, body):
-#     """ Upravenie príspevku - možnosť meniť title a body """
-#     for d in posts_dict:
-#         if int(d['id']) == int(id):
-#             d["title"] = title
-#             d["body"] = body
-#             return (d, {"Správa": "Príspevok bol upravený."})
-#     return {'Chyba': "Príspevok som nenašiel!"}
+
+@app.route('/posts/<id>', methods=['PATCH'])
+def patch_post(id, title, body):
+    """ Upravenie príspevku - možnosť meniť title a body """
+    for d in posts_dict:
+        if int(d['id']) == int(id):
+            d["title"] = title
+            d["body"] = body
+            return (d, {"Správa": "Príspevok bol upravený."})
+    return {'Chyba': "Príspevok som nenašiel!"}
 
 
 @app.route('/posts/<id>', methods=['DELETE'])
@@ -275,27 +283,11 @@ def delete_post(id):
     if post == {'Chyba': 404}:
         return {'Chyba': "Príspevok som nenašiel!"}
     posts_dict.pop(id) # put_post -> for d in posts_dict: if int(d['id']) == int(id):
-    return {"Správa": "Príspevok bol odstránený."}
+
     # post = Post.query.get(id)
+    #
     # db.session.delete(post)
     # db.session.commit()
     #
     # return post_schema.jsonify(post)
-
-
-
-
-
-
-
-# get_post(5)
-
-# print(data)
-
-# def detailny_vypis_JSON():
-#     # print(objekt_json, "\n")
-#     for i in json.loads(objekt_json):
-#         print(type(i), "\u001b[33m", json.dumps(i), "\u001b[0m", "=>", "\u001b[32;1m", i, "\u001b[0m")
-#     print()
-# detailny_vypis_JSON()
-
+    return {"Správa": "Príspevok bol odstránený."}
