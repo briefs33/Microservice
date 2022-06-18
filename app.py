@@ -17,8 +17,8 @@ import os
 # 17.6 8:00AM - 11:30 (3h 30min -30min)
 # 17.6 12:30PM - 13:30 (1h)
 # 17.6 2:30PM - 5:00PM (2h 30min -15min)
-# 17.6 6:00PM? - 9:00PM (3h -30min)
-# 18.6 11:00AM -  ()
+# 17.6 6:00PM - 9:00PM (3h -30min)
+# 18.6 5:00PM -  ()
 #
 #
 #
@@ -161,22 +161,22 @@ def get_posts():
                 output = d
                 break
 
-        # post = Post.query.get(id)
-        # return post_schema.jsonify(post)
+        post = Post.query.get(id)
+        return render_template("post.html", post = post_schema.jsonify(post))
         return render_template("post.html", post = output)
     elif not userId=="None":
         for d in posts_dict:
             if int(d['userId']) == int(userId): # upravuje poradie príspevkov
                 output['post{}'.format(d['userId'])] = d
 
-        # posts = Post.query.get(userId)
-        # result = posts_schema.dump(posts)
-        # return jsonify(result.data)
+        posts = Post.query.get(userId)
+        result = posts_schema.dump(posts)
+        return render_template("posts.html", posts = jsonify(result.data))
         return render_template("posts.html", posts = output)
 
-    # posts = Post.query.all()
-    # result = posts_schema.dump(all_posts)
-    # return jsonify(result.data)
+    posts = Post.query.all()
+    result = posts_schema.dump(posts)
+    return render_template("posts.html", posts = jsonify(result.data))
     return render_template("posts.html", posts = posts_dict)
 
 
@@ -191,14 +191,14 @@ def get_users():
             if int(d['userId']) == int(userId): # upravuje poradie príspevkov
                 output['post{}'.format(d['id'])] = d
 
-        # posts = User.query.get(userId)
-        # result = posts_schema.dump(posts)
-        # return jsonify(result.data)
+        posts = User.query.get(userId)
+        result = posts_schema.dump(posts)
+        return render_template("user.html", user = jsonify(result.data))
         return render_template("user.html", user = output)
 
-    # users = User.query.all()
-    # result = users_schema.dump(all_users)
-    # return jsonify(result.data)
+    users = User.query.all()
+    result = users_schema.dump(users)
+    return render_template("users.html", users = jsonify(result.data))
     return render_template("users.html", users = users_dict)
 
 
@@ -225,12 +225,12 @@ def add_post():
     if not title or not body or not userId:
        return render_template("failure.html")
 
-    # new_post = Post(title, body, userId)
-    #
-    # db.session.add(new_post)
-    # db.session.commit()
-    # 
-    # return post_schema.jsonify(new_post)
+    new_post = Post(title, body, userId)
+
+    db.session.add(new_post)
+    db.session.commit()
+
+    return post_schema.jsonify(new_post)
     posts_dict.append(thisdict)
     return redirect("/posts")
 
@@ -254,12 +254,12 @@ def add_user():
     if not name:
         return render_template("failure.html")
 
-    # new_user = User(name)
-    #
-    # db.session.add(new_user)
-    # db.session.commit()
-    # 
-    # return user_schema.jsonify(new_user)
+    new_user = User(name)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return user_schema.jsonify(new_user)
     users_dict.append(thisdict)
     return redirect("/users")
 
