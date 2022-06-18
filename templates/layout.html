@@ -3,9 +3,32 @@
 <html lang="sk">
     <head>
         <meta name="viewport" content="initial-scale=1, width=device-width">
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}" type="text/css"><!--Ctrl+Shift+R-->
         <title>API</title>
     </head>
+
     <body>
+        <header>
+            <nav class="navbar">
+                <a href="/" class="nav-branding">API</a>
+
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="/" class="nav-link">API</a></li>
+                    <li class="nav-item"><a href="/posts" class="nav-link">Články</a></li>
+                    <li class="nav-item"><a href="/users" class="nav-link">Užívatelia</a></li>
+                    <li class="nav-item"><a href="/login" class="button">Prihlásenie</a></li>
+                    <li class="nav-item"><a href="/registration" class="button">Registrácia</a></li>
+                </ul>
+
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </nav>
+        </header>
         {% block body %}{% endblock %}
     </body>
 </html>
+
+<script src="{{ url_for('static', filename = 'script.js') }}"></script>

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <p>{{ post["id"] }}</p>
+    <p class="id">{{ post["id"] }}</p>
     <h1>{{ post["title"] }}</h1>
-    {{ post["body"] }}
+    <p class="body">{{ post["body"] }}</p>
 {% endblock %}

@@ -2,10 +2,8 @@
 
 {% block body %}
     {% for post in posts %}
-        <div>
-            <p>{{ post["id"] }}</p>
-            <a href="posts?id={{ post['id'] }}">{{ post["title"] }}</a>
-            <p>{{ post["body"][:150] }}</p>
-        </div>
+        <p class="id">{{ post["id"] }}</p>
+        <h1><a href="posts?id={{ post['id'] }}" class="title">{{ post["title"] }}</a></h1>
+        <p class="body">{{ post["body"][:150] }}</p>
     {% endfor %}
 {% endblock %}
