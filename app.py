@@ -6,6 +6,11 @@ from flask_marshmallow import Marshmallow
 import os
 
 
+# 15.6 1:33PM - 4:33PM (3h) 
+# 15.6 6:00PM - 7:00PM (1h)
+# 15.6 5:15PM - 5:30PM (15min)
+# 15.6 7:00PM - 8:00PM (1h)
+# 16.6 6:45AM - 10:00AM (3h 15min)
 # 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
 # 16.6 1:15PM - 2:45PM (1h 30min) [pridanie zobrazenia príspevkov podla uzivatela]
 # 16.6 6:00PM - 7:15 (1h 15min)
@@ -129,8 +134,8 @@ def index():
 
 @app.route('/', methods = ['POST'])
 def signin():
-    """ Domovská stránka """
-    message = request.form.get("message", "None")
+    """ Domovská stránka po prihlásení """
+    message = request.form.get("name", "None")
     return render_template("index.html", message = message)
 
 
