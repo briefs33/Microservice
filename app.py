@@ -13,7 +13,7 @@ import os
 # 17.6 12:30PM - 13:30 (1h)
 # 17.6 2:30PM - 5:00PM (2h 30min -15min)
 # 17.6 6:00PM? - 9:00PM (3h -30min)
-# 18.6 8:00AM - 
+# 18.6 11:00AM -  ()
 #
 #
 #
@@ -120,10 +120,17 @@ posts_schema = PostSchema(many = True)
 #     app.run(debug = True)
 
 
-@app.route('/')
+@app.route('/', methods = ['GET'])
 def index():
     """ Domovská stránka """
     message = request.args.get("message", "None")
+    return render_template("index.html", message = message)
+
+
+@app.route('/', methods = ['POST'])
+def signin():
+    """ Domovská stránka """
+    message = request.form.get("message", "None")
     return render_template("index.html", message = message)
 
 
