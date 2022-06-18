@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <a href="posts?userId={{ user['id'] }}">{{ user["name"] }}</a>
+    <!-- <a href="posts?id={{ user['id'] }}">{{ user["name"] }}</a> -->
+{% endblock %}

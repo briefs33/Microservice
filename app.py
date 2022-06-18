@@ -1,7 +1,9 @@
-from flask import Flask, redirect, render_template, request, jsonify
+
+from flask import Flask, make_response, redirect, render_template, request, jsonify
 import requests
 import json
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.inspection import inspect
 from flask_marshmallow import Marshmallow
 import os
 
@@ -18,8 +20,8 @@ import os
 # 17.6 12:30PM - 13:30 (1h)
 # 17.6 2:30PM - 5:00PM (2h 30min -15min)
 # 17.6 6:00PM - 9:00PM (3h -30min)
-# 18.6 5:00PM -  ()
-#
+# 18.6 5:00PM - 6:00PM (None) [Príprava oživenia db]
+# 18.6 7:00PM - 10:00PM (3h)
 #
 #
 #
@@ -34,8 +36,8 @@ import os
 # https://www.sqlalchemy.org/
 # https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html
 # https://marshmallow.readthedocs.io/en/stable/quickstart.html
-#
-#
+# https://flask.palletsprojects.com
+# https://stackoverflow.com/
 #
 #
 #
@@ -75,12 +77,22 @@ db = SQLAlchemy(app)
 # Init ma
 ma = Marshmallow(app)
 
+
 # User Class/Model
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(60))
     children = db.relationship("Post")
+
+    def __init__(self, name, remote_addr = None):
+        self.name = name
+        if remote_addr is None and request:
+            remote_addr = request.remote_addr
+        self.remote_addr = remote_addr
+
+    def __repr__(self):
+        return '<User %r>' % self.name
 
 # Post Class/Model
 class Post(db.Model):
@@ -90,12 +102,23 @@ class Post(db.Model):
     body = db.Column(db.String(600))
     userId = db.Column(db.Integer, db.ForeignKey("users.id"))
 
-    def __init__(self) -> None:
-        super().__init__()
-    # def __init__(self, title, body, userId)
-        # self.title = title
-        # self.body = body
-        # self.userId = userId
+    def __init__(self, title, body, userId, remote_addr = None):
+        self.title = title
+        self.body = body
+        self.userId = userId
+        if remote_addr is None and request:
+            remote_addr = request.remote_addr
+        self.remote_addr = remote_addr
+
+    def __repr__(self):
+        return '<Post %r>' % self.title
+
+# def last_row(Table: type, *, session): # -> Table
+#     primary_key = inspect(Table).primary_key[0].name # must be an arithmetic type
+#     primary_key_row = getattr(Table, primary_key)
+#     # get first, sorted by negative ID (primary key)
+#     return session.query(Table).order_by(-primary_key_row).first()
+
 
 # User Schema
 class UserSchema(ma.Schema):
@@ -113,16 +136,20 @@ users_schema = UserSchema(many = True)
 post_schema = PostSchema()
 posts_schema = PostSchema(many = True)
 
+
 # """
 # python cls:
 #     >>> from app import db
 #     >>> db.create_all()
-# """
 
+# First run
+# export --- export FLASK_APP=application.py
+# export --- export FLASK_ENV=development
 
 # Run Server
 # if __name__ == '__main__':
 #     app.run(debug = True)
+# """
 
 
 @app.route('/', methods = ['GET'])
@@ -156,27 +183,30 @@ def get_posts():
     output = {}
 
     if not id=="None":
-        for d in posts_dict:
-            if int(d['id']) == int(id):
-                output = d
-                break
-
-        post = Post.query.get(id)
+        # for d in posts_dict:
+        #     if int(d['id']) == int(id):
+        #         output = d
+        #         break
+        # print(int(id))
+        post = Post.query.get(id = id)
+        return render_template("post.html", post = post_schema)
         return render_template("post.html", post = post_schema.jsonify(post))
         return render_template("post.html", post = output)
     elif not userId=="None":
-        for d in posts_dict:
-            if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-                output['post{}'.format(d['userId'])] = d
-
-        posts = Post.query.get(userId)
+        # for d in posts_dict:
+        #     if int(d['userId']) == int(userId): # upravuje poradie príspevkov
+        #         output['post{}'.format(d['userId'])] = d
+        # print(int(userId))
+        posts = Post.query.get(userId = userId)
         result = posts_schema.dump(posts)
-        return render_template("posts.html", posts = jsonify(result.data))
+        return render_template("posts.html", posts = result)
+        return render_template("posts.html", posts = jsonify(result)) # result.data
         return render_template("posts.html", posts = output)
 
     posts = Post.query.all()
     result = posts_schema.dump(posts)
-    return render_template("posts.html", posts = jsonify(result.data))
+    return render_template("posts.html", posts = result)
+    return render_template("posts.html", posts = jsonify(result)) # result.data
     return render_template("posts.html", posts = posts_dict)
 
 
@@ -187,18 +217,20 @@ def get_users():
     output = {}
 
     if not userId=="None":
-        for d in posts_dict:
-            if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-                output['post{}'.format(d['id'])] = d
+        # for d in posts_dict:
+        #     if int(d['userId']) == int(userId): # upravuje poradie príspevkov
+        #         output['post{}'.format(d['id'])] = d
 
-        posts = User.query.get(userId)
-        result = posts_schema.dump(posts)
-        return render_template("user.html", user = jsonify(result.data))
+        user = User.query.get(id = userId)
+        result = posts_schema.dump(user)
+        return render_template("user.html", user = result) # result.data
+        return render_template("user.html", user = jsonify(result)) # result.data
         return render_template("user.html", user = output)
 
     users = User.query.all()
     result = users_schema.dump(users)
-    return render_template("users.html", users = jsonify(result.data))
+    return render_template("users.html", users = result)
+    return render_template("users.html", users = jsonify(result)) # result.data
     return render_template("users.html", users = users_dict)
 
 
@@ -225,7 +257,7 @@ def add_post():
     if not title or not body or not userId:
        return render_template("failure.html")
 
-    new_post = Post(title, body, userId)
+    new_post = Post(title = title, body = body, userId = userId)
 
     db.session.add(new_post)
     db.session.commit()
@@ -254,7 +286,7 @@ def add_user():
     if not name:
         return render_template("failure.html")
 
-    new_user = User(name)
+    new_user = User(name = name)
 
     db.session.add(new_user)
     db.session.commit()
