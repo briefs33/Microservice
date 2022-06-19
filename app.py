@@ -26,8 +26,8 @@ import os
 # 18.6 5:00PM - 6:00PM (None) [Príprava oživenia db]
 # 18.6 7:00PM - 10:00PM (3h)
 # 18.6      = 3h 0min (+3h CSS)
-# 19.6 8:00AM - () [filter_by(id/userId).all()]
-#
+# 19.6 8:00AM - 10:30AM (2h 30min) [filter_by(id/userId).all()]
+# 19.6 12:00AM - () [Prekopanie stránky]
 #
 # 19.6      = h min
 #
@@ -63,12 +63,12 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Mockend
-posts_objekt_json, users_objekt_json = [], []
-api_url = 'https://mockend.com/briefs33/Microservice'
-posts_objekt_json = requests.get(api_url + '/posts')
-users_objekt_json = requests.get(api_url + '/users')
-posts_dict = posts_objekt_json.json()
-users_dict = users_objekt_json.json()
+# posts_objekt_json, users_objekt_json = [], []
+# api_url = 'https://mockend.com/briefs33/Microservice'
+# posts_objekt_json = requests.get(api_url + '/posts')
+# users_objekt_json = requests.get(api_url + '/users')
+# posts_dict = posts_objekt_json.json()
+# users_dict = users_objekt_json.json()
 
 
 # Database
@@ -161,23 +161,9 @@ def css():
     return render_template("login.html")
 
 
-@app.route('/users', methods = ['GET']) # Rozdeliť na 2 requesty!
+@app.route('/users', methods = ['GET'])
 def get_users():
-    """ Vráti zoznam užívateľov, alebo užívateľa na základe userId. """
-    userId = request.args.get("userId", "None")
-    output = {}
-
-    if not userId=="None":
-        # for d in posts_dict:
-        #     if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-        #         output['post{}'.format(d['id'])] = d
-
-        user = User.query.filter_by(id = userId).all()
-        result = posts_schema.dump(user)
-        return render_template("user.html", user = result) # result.data
-        return render_template("user.html", user = jsonify(result)) # result.data
-        return render_template("user.html", user = output)
-
+    """ Vráti zoznam užívateľov """
     users = User.query.all()
     result = users_schema.dump(users)
     return render_template("users.html", users = result)
@@ -185,36 +171,23 @@ def get_users():
     return render_template("users.html", users = users_dict)
 
 
-@app.route('/posts', methods = ['GET']) # Rozdeliť na 3 requesty!
-def get_posts():
-    """ Vráti zoznam všetkých príspevkov, príspevky na základe userId, alebo príspevok na základe id.
-    - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
-      (platné iba pre vyhľadávanie pomocou id príspevku) """
-    id = request.args.get("id", "None")
-    userId = request.args.get("userId", "None")
+@app.route('/users/<userId>', methods = ['GET'])
+def get_user(userId):
+    """ Vráti užívateľa na základe userId. """
+    return render_template("user.html", userId = userId) # result.data
+    # user = User.query.get(userId)
+    return render_template("user.html", user = jsonify(result)) # result.data
+    # userId = request.args.get("userId", "None")
     output = {}
+    # for d in posts_dict:
+    #     if int(d['userId']) == int(userId): # upravuje poradie príspevkov
+    #         output['post{}'.format(d['id'])] = d
+    return render_template("user.html", user = output)
 
-    if not id=="None":
-        # for d in posts_dict:
-        #     if int(d['id']) == int(id):
-        #         output = d
-        #         break
-        # print(int(id))
-        post = Post.query.get(id)
-        return render_template("post.html", post = post)
-        return render_template("post.html", post = post_schema.jsonify(post))
-        return render_template("post.html", post = output)
-    elif not userId=="None":
-        # for d in posts_dict:
-        #     if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-        #         output['post{}'.format(d['userId'])] = d
-        # print(int(userId))
-        posts = Post.query.filter_by(userId = userId).all()
-        result = posts_schema.dump(posts)
-        return render_template("posts.html", posts = result)
-        return render_template("posts.html", posts = jsonify(result)) # result.data
-        return render_template("posts.html", posts = output)
 
+@app.route('/posts', methods = ['GET'])
+def get_posts():
+    """ Vráti zoznam všetkých príspevkov. """
     posts = Post.query.all()
     result = posts_schema.dump(posts)
     return render_template("posts.html", posts = result)
@@ -222,16 +195,49 @@ def get_posts():
     return render_template("posts.html", posts = posts_dict)
 
 
-@app.route('/new_post', methods=['GET'])
-def new_post():
+@app.route('/posts/<id>', methods = ['GET'])
+def get_post(id):
+    """ Vráti príspevok na základe id.
+    - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť """
+    post = Post.query.get(id)
+    return render_template("post.html", post = post)
+    return render_template("post.html", post = post_schema.jsonify(post))
+    output = {}
+
+    # for d in posts_dict:
+    #     if int(d['id']) == int(id):
+    #         output = d
+    #         break
+    # print(int(id))
+    return render_template("post.html", post = output)
+
+
+@app.route('/users/<userId>/posts', methods = ['GET'])
+def get_user_posts(userId):
+    """ Vráti zoznam všetkých príspevkov na základe userId. """
+    posts = Post.query.filter_by(userId = userId).all()
+    result = posts_schema.dump(posts)
+    return render_template("posts.html", posts = result)
+    return render_template("posts.html", posts = jsonify(result)) # result.data
+    output = {}
+
+    # for d in posts_dict:
+    #     if int(d['userId']) == int(userId): # upravuje poradie príspevkov
+    #         output['post{}'.format(d['userId'])] = d
+    # print(int(userId))
+    return render_template("posts.html", posts = output)
+
+
+@app.route('/users/<userId>/new_post', methods=['GET'])
+def new_post(userId):
     """ Vráti formulár pre napísanie nového článku. """
-    return render_template("new_post.html", users = users_dict)
+    return render_template("new_post.html", userId = userId)
 
 
 # POST Routes
 @app.route('/', methods = ['POST'])
 def signin():
-    """ Po úspešnim prihlásení užívateľa vráti domovskú stránku. """
+    """ Po úspešnom prihlásení užívateľa vráti domovskú stránku. """
     message = request.form.get("name", "None")
     return render_template("index.html", message = message)
 
@@ -240,35 +246,46 @@ def signin():
 def add_user():
     """ Pridá nového užívateľa do databázy, a vráti ???
     Pridanie užívateľa - potrebné validovať userID pomocou externej API """
-    userId = int(users_dict[-1]['id']) + 1
     name = request.form.get("name")
-
-    thisdict = {
-        "id": userId,
-        "name": name
-    }
-
     if not name:
-        return render_template("failure.html")
+        return render_template("registration.html?chyba=no_name")
 
     new_user = User(name = name)
 
     db.session.add(new_user)
     db.session.commit()
 
-    return user_schema.jsonify(new_user)
-    users_dict.append(thisdict)
     return redirect("/users")
+    return user_schema.jsonify(new_user)
+    userId = int(users_dict[-1]['id']) + 1
+
+    thisdict = {
+        "id": userId,
+        "name": name
+    }
+
+    users_dict.append(thisdict)
 
 
 @app.route('/posts', methods=['POST'])
 def add_post():
     """ Pridá nový článok do databázy, a vráti ???
     Pridanie príspevku - potrebné validovať userID pomocou externej API """
-    id = int(posts_dict[-1]['id']) + 1
     title = request.form.get("title")
     body = request.form.get("body")
     userId = request.form.get("userId")
+
+    if not title or not body or not userId:
+       return render_template("new_post.html?chyba=no_title_or_body_or_who_you_are")
+
+    new_post = Post(title = title, body = body, userId = userId)
+
+    db.session.add(new_post)
+    db.session.commit()
+
+    return redirect("/posts")
+    return post_schema.jsonify(new_post)
+    id = int(posts_dict[-1]['id']) + 1
 
     thisdict = {
         "id": id,
@@ -277,77 +294,68 @@ def add_post():
         "userId": userId
     }
 
-    if not title or not body or not userId:
-       return render_template("failure.html")
-
-    new_post = Post(title = title, body = body, userId = userId)
-
-    db.session.add(new_post)
-    db.session.commit()
-
-    return post_schema.jsonify(new_post)
     posts_dict.append(thisdict)
-    return redirect("/posts")
+
 
 
 """ Neoverené: """
 
-# PUT Routes
-@app.route('/posts/<id>', methods=['PUT'])
-def put_post(id, title, body, userId):
-# def update_post(id):
-    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
-    for d in posts_dict:
-        if int(d['id']) == int(id):
-            d["title"] = title
-            d["body"] = body
-            d["userId"] = userId
-            return (d, {"Správa": "Príspevok bol upravený."})
+# # PUT Routes
+# @app.route('/posts/<id>', methods=['PUT'])
+# def put_post(id, title, body, userId):
+# # def update_post(id):
+#     """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+#     for d in posts_dict:
+#         if int(d['id']) == int(id):
+#             d["title"] = title
+#             d["body"] = body
+#             d["userId"] = userId
+#             return (d, {"Správa": "Príspevok bol upravený."})
 
-    post = Post.queryfilter_by(id = id).all()
+#     post = Post.queryfilter_by(id = id).all()
 
-    title = request.json['title']
-    body = request.json['body']
-    userId = request.json['userId']
+#     title = request.json['title']
+#     body = request.json['body']
+#     userId = request.json['userId']
 
-    post.title = title
-    post.body = body
-    post.userId = userId
+#     post.title = title
+#     post.body = body
+#     post.userId = userId
 
-    db.session.commit()
+#     db.session.commit()
 
-    return post_schema.jsonify(post)
-    return {'Chyba': "Príspevok som nenašiel!"}
-
-
-# PATCH Routes
-@app.route('/posts/<id>', methods=['PATCH'])
-def patch_post(id, title, body):
-    """ Upravenie príspevku - možnosť meniť title a body """
-    for d in posts_dict:
-        if int(d['id']) == int(id):
-            d["title"] = title
-            d["body"] = body
-            return (d, {"Správa": "Príspevok bol upravený."})
-    return {'Chyba': "Príspevok som nenašiel!"}
+#     return post_schema.jsonify(post)
+#     return {'Chyba': "Príspevok som nenašiel!"}
 
 
-# DELETE Routes
-@app.route('/posts/<id>', methods=['DELETE'])
-def delete_post(id):
-    """ Odstránenie príspevku """
-    post = get_posts(id)
-    if post == {'Chyba': 404}:
-        return {'Chyba': "Príspevok som nenašiel!"}
-    posts_dict.pop(id) # put_post -> for d in posts_dict: if int(d['id']) == int(id):
+# # PATCH Routes
+# @app.route('/posts/<id>', methods=['PATCH'])
+# def patch_post(id, title, body):
+#     """ Upravenie príspevku - možnosť meniť title a body """
+#     for d in posts_dict:
+#         if int(d['id']) == int(id):
+#             d["title"] = title
+#             d["body"] = body
+#             return (d, {"Správa": "Príspevok bol upravený."})
+#     return {'Chyba': "Príspevok som nenašiel!"}
 
-    post = Post.query.filter_by(id = id).all()
 
-    db.session.delete(post)
-    db.session.commit()
+# # DELETE Routes
+# @app.route('/posts/<id>', methods=['DELETE'])
+# def delete_post(id):
+#     """ Odstránenie príspevku """
+#     post = get_posts(id)
+#     if post == {'Chyba': 404}:
+#         return {'Chyba': "Príspevok som nenašiel!"}
+#     posts_dict.pop(id) # put_post -> for d in posts_dict: if int(d['id']) == int(id):
 
-    return post_schema.jsonify(post)
-    return {"Správa": "Príspevok bol odstránený."}
+#     post = Post.query.filter_by(id = id).all()
+
+#     db.session.delete(post)
+#     db.session.commit()
+
+#     return post_schema.jsonify(post)
+#     return {"Správa": "Príspevok bol odstránený."}
 
 
 # python cls:
@@ -359,5 +367,5 @@ def delete_post(id):
 # export --- export FLASK_ENV=development
 
 # Run Server
-if __name__ == '__main__':
-    app.run(debug = True) # False!
+# if __name__ == '__main__':
+#     app.run(debug = True) # False!

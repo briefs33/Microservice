@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <h1>Zoznam užívateľov</h1>
+        <h1>Zoznam užívateľov</h1>
 
     {% for user in users %}
-        <a href="posts?userId={{ user['id'] }}">{{ user["name"] }}</a>
+        <a href="users/{{ user['id'] }}">{{ user["name"] }}</a>
         <!-- <a href="posts?id={{ user['id'] }}">{{ user["name"] }}</a> -->
     {% endfor %}
 {% endblock %}

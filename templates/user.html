@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <a href="posts?userId={{ user['id'] }}">{{ user["name"] }}</a>
-    <!-- <a href="posts?id={{ user['id'] }}">{{ user["name"] }}</a> -->
+        <h1><a href="/users/{{ userId }}/posts" class="title">Zobraziť články užívateľa</a></h1>
+        <h1><a href="/users/{{ userId }}/new_post" class="title">Vytvoriť článok</a></h1>
+        <h1><a href="/" class="title">Odstrániť užívateľa</a>Toto je blaf.</h1>
 {% endblock %}

@@ -1,7 +1,12 @@
 {% extends "layout.html" %}
 
 {% block body %}
-        <h1>Zoznam článkov</h1>
+        <h1>Zoznam článkov uživateľa {{ post['userId'] }}</h1>
+
+        <!-- <a href="users/{{ user['id'] }}/posts">{{ user["name"] }}</a> -->
+        <!-- <a href="posts?id={{ user['id'] }}">{{ user["name"] }}</a> -->
+
+        <h1>Zoznam článkov uživateľa {{ post['userId'] }}</h1>
 
     {% for post in posts %}
         <p class="id">{{ post["id"] }}</p>
