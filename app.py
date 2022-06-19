@@ -14,12 +14,12 @@ import os
 # 15.6 7:00PM - 8:00PM (1h)
 # 15.6      = 5h 15min
 # 16.6 6:45AM - 10:00AM (3h 15min)
-# 16.6 11:00AM - 12:45 (1h 45min -15min[obed])
+# 16.6 11:00AM - 12:45PM (1h 45min -15min[obed])
 # 16.6 1:15PM - 2:45PM (1h 30min) [pridanie zobrazenia príspevkov podla uzivatela]
-# 16.6 6:00PM - 7:15 (1h 15min)
+# 16.6 6:00PM - 7:15PM (1h 15min)
 # 16.6      = 7h 30min
 # 17.6 8:00AM - 11:30 (3h 30min -30min)
-# 17.6 12:30PM - 13:30 (1h)
+# 17.6 12:30PM - 1:30PM (1h)
 # 17.6 2:30PM - 5:00PM (2h 30min -15min)
 # 17.6 6:00PM - 9:00PM (3h -30min)
 # 17.6      = 8h 45min
@@ -27,8 +27,8 @@ import os
 # 18.6 7:00PM - 10:00PM (3h)
 # 18.6      = 3h 0min (+3h CSS)
 # 19.6 8:00AM - 10:30AM (2h 30min) [filter_by(id/userId).all()]
-# 19.6 12:00AM - () [Prekopanie stránky]
-#
+# 19.6 12:00PM - 4:00PM (4h) [Prekopanie stránky]
+# 19.6 PM - PM (h)
 # 19.6      = h min
 #
 # """ Zdroje:
