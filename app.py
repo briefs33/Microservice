@@ -234,6 +234,18 @@ def new_post(userId):
     return render_template("new_post.html", userId = userId)
 
 
+@app.route('/users/<userId>/delete', methods=['GET'])
+def del_user(userId):
+    """ Zavolá funkciu pre odstránenie užívateľa a jeho článkov. """
+    delete_user(userId)
+
+
+@app.route('/posts/<id>/delete', methods=['GET'])
+def del_post(id):
+    """ Zavolá funkciu pre odstránenie príspevku. """
+    delete_post(id)
+
+
 # POST Routes
 @app.route('/', methods = ['POST'])
 def signin():
@@ -300,62 +312,151 @@ def add_post(userId):
 
 """ Neoverené: """
 
-# # PUT Routes
-# @app.route('/posts/<id>', methods=['PUT'])
-# def put_post(id, title, body, userId):
-# # def update_post(id):
-#     """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
-#     for d in posts_dict:
-#         if int(d['id']) == int(id):
-#             d["title"] = title
-#             d["body"] = body
-#             d["userId"] = userId
-#             return (d, {"Správa": "Príspevok bol upravený."})
+@app.route('/users/<userId>', methods=['POST'])
+def update_user(userId):
+    """ Zavolá funkciu na zmenu užívateľských údajov. """
+    name = request.form.get("name")
 
-#     post = Post.queryfilter_by(id = id).all()
-
-#     title = request.json['title']
-#     body = request.json['body']
-#     userId = request.json['userId']
-
-#     post.title = title
-#     post.body = body
-#     post.userId = userId
-
-#     db.session.commit()
-
-#     return post_schema.jsonify(post)
-#     return {'Chyba': "Príspevok som nenašiel!"}
+    put_user(userId, name)
+    # patch_user(userId, name)
 
 
-# # PATCH Routes
-# @app.route('/posts/<id>', methods=['PATCH'])
-# def patch_post(id, title, body):
-#     """ Upravenie príspevku - možnosť meniť title a body """
-#     for d in posts_dict:
-#         if int(d['id']) == int(id):
-#             d["title"] = title
-#             d["body"] = body
-#             return (d, {"Správa": "Príspevok bol upravený."})
-#     return {'Chyba': "Príspevok som nenašiel!"}
+@app.route('/posts/<id>', methods=['POST'])
+def update_post(id):
+    """ Zavolá funkciu pre odstránenie príspevku. """
+    title = request.form.get("title")
+    body = request.form.get("body")
+    userId = request.form.get("userId")
+
+    put_post(id, title, body, userId)
+    # patch_post(id, title, body, userId)
 
 
-# # DELETE Routes
-# @app.route('/posts/<id>', methods=['DELETE'])
-# def delete_post(id):
-#     """ Odstránenie príspevku """
-#     post = get_posts(id)
-#     if post == {'Chyba': 404}:
-#         return {'Chyba': "Príspevok som nenašiel!"}
-#     posts_dict.pop(id) # put_post -> for d in posts_dict: if int(d['id']) == int(id):
+# PUT Routes
+@app.route('/users/<userId>/', methods=['PUT'])
+def put_user(userId, name = None):
+    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+    # user = User.queryfilter_by(id = userId).all()
 
-#     post = Post.query.filter_by(id = id).all()
+    if name == None:
+        name = request.json['name']
 
-#     db.session.delete(post)
-#     db.session.commit()
+    # user.name = name
 
-#     return post_schema.jsonify(post)
-#     return {"Správa": "Príspevok bol odstránený."}
+    # db.session.upgrade(user)
+    # db.session.commit()
+
+    # return redirect("/users/<userId>")
+    patch_user(userId, name)
+
+
+@app.route('/posts/<id>/', methods=['PUT'])
+def put_post(id, title = None, body = None, userId = None):
+    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+    post = Post.queryfilter_by(id = id).all()
+
+    if title == None or body == None or userId == None:
+        title = request.json['title']
+        body = request.json['body']
+        userId = request.json['userId']
+
+    post.title = title
+    post.body = body
+    post.userId = userId
+
+    db.session.upgrade(post)
+    db.session.commit()
+
+    return redirect("/posts/<id>")
+    return post_schema.jsonify(post)
+    for d in posts_dict:
+        if int(d['id']) == int(id):
+            d["title"] = title
+            d["body"] = body
+            d["userId"] = userId
+            return (d, {"Správa": "Príspevok bol upravený."})
+    return {'Chyba': "Príspevok som nenašiel!"}
+
+
+# PATCH Routes
+@app.route('/users/<userId>', methods=['PATCH'])
+def patch_user(userId, name = None):
+    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+    user = User.queryfilter_by(id = userId).all()
+
+    if name == None:
+        name = request.json['name']
+
+    user.name = name
+
+    db.session.upgrade(user)
+    db.session.commit()
+
+    return redirect("/users/<userId>")
+
+
+@app.route('/posts/<id>', methods=['PATCH'])
+def patch_post(id, title = None, body = None, userId = None):
+    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+    post = Post.queryfilter_by(id = id).all()
+
+    if request.json['title']:
+        title = request.json['title']
+    if request.json['body']:
+        body = request.json['body']
+    if request.json['userId']:
+        userId = request.json['userId']
+
+    if not title == None:
+        post.title = title
+    if not body == None:
+        post.body = body
+    if userId:
+        post.userId = userId
+
+    db.session.upgrade(post)
+    db.session.commit()
+
+    return redirect("/posts/<id>")
+    for d in posts_dict:
+        if int(d['id']) == int(id):
+            d["title"] = title
+            d["body"] = body
+            return (d, {"Správa": "Príspevok bol upravený."})
+    return {'Chyba': "Príspevok som nenašiel!"}
+
+
+# DELETE Routes
+@app.route('/users/<userId>', methods=['DELETE'])
+def delete_user(userId):
+    """ Odstráni užívateľa a jeho články. """
+    user = User.query.filter_by(userId = userId).all()
+    # user = User.query.filter_by(id = userId).all()
+    # user = Post.query.filter_by(userId = userId).all()
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return redirect("/users")
+
+
+@app.route('/posts/<id>', methods=['DELETE'])
+def delete_post(id):
+    """ Odstráni príspevok. """
+    post = Post.query.filter_by(id = id).all()
+
+    db.session.delete(post)
+    db.session.commit()
+
+    return redirect("/posts")
+    post = get_posts(id)
+    if post == {'Chyba': 404}:
+        return {'Chyba': "Príspevok som nenašiel!"}
+    posts_dict.pop(id) # put_post -> for d in posts_dict: if int(d['id']) == int(id):
+
+    post = Post.query.filter_by(id = id).all()
+
+    return post_schema.jsonify(post)
 
 
 # python cls:
@@ -368,4 +469,4 @@ def add_post(userId):
 
 # Run Server
 # if __name__ == '__main__':
-#     app.run(debug = True) # False!
+#     app.run(debug = False)
