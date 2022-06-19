@@ -29,7 +29,8 @@ import os
 # 18.6      = 3h 0min (+3h CSS)
 # 19.6 8:00AM - 10:30AM (2h 30min) [filter_by(id/userId).all()]
 # 19.6 12:00PM - 4:00PM (4h) [Prekopanie stránky]
-# 19.6 6:00PM - PM (h) [user_session]
+# 19.6 6:00PM - 8:30PM (2h 30min) [user_session]
+# 19.6 9:15PM - PM (h)
 # 19.6      = h min
 #
 # """ Zdroje:
@@ -46,7 +47,7 @@ import os
 # https://python-adv-web-apps.readthedocs.io/en/latest/flask_db2.html [filter_by(id/userId).all()]
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/ [User.query.filter_by(username=username).first()]
 # https://pythonexamples.org/python-access-list-items/
-# 
+# https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_orm_updating_objects.htm
 #
 #
 #
@@ -173,7 +174,8 @@ def get_users():
 @app.route('/users/<userId>', methods = ['GET'])
 def get_user(userId):
     """ Vráti užívateľa na základe userId. """
-    return render_template("user.html", userId = userId) # result.data
+    user = User.query.filter_by(id = userId).first() # .first_or_404
+    return render_template("user.html", user = user) # result.data
     return render_template("user.html", user = jsonify(result)) # result.data
 
 
@@ -278,8 +280,8 @@ def update_user(userId):
     """ Zavolá funkciu na zmenu užívateľských údajov. """
     name = request.form.get("name")
 
-    return put_user(userId, name)
-    # patch_user(userId, name)
+    # return put_user(userId, name)
+    return patch_user(userId, name)
 
 
 @app.route('/posts/<id>', methods=['POST'])
@@ -289,95 +291,93 @@ def update_post(id):
     body = request.form.get("body")
     userId = request.form.get("userId")
 
-    return put_post(id, title, body, userId)
-    # patch_post(id, title, body, userId)
+    # return put_post(id, title, body, userId)
+    return patch_post(id, title, body, userId)
 
 
-# PUT Routes
-@app.route('/users/<userId>/', methods=['PUT'])
-def put_user(userId, name = None):
-    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
-    # user = User.queryfilter_by(id = userId).all()
+# # PUT Routes
+# @app.route('/users/<userId>/', methods=['PUT'])
+# def put_user(userId, name = None):
+#     """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+#     # user = User.queryfilter_by(id = userId).all()
 
-    if name == None:
-        name = request.json['name']
+#     if name == None:
+#         name = request.json['name']
 
-    # user.name = name
+#     # user.name = name
 
-    # db.session.upgrade(user)
-    # db.session.commit()
+#     # db.session.upgrade(user)
+#     # db.session.commit()
 
-    # return redirect("/users/<userId>")
-    return patch_user(userId, name)
+#     # return redirect("/users/<userId>")
+#     return patch_user(userId, name)
 
 
-@app.route('/posts/<id>/', methods=['PUT'])
-def put_post(id, title = None, body = None, userId = None):
-    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
-    post = Post.queryfilter_by(id = id).all()
+# @app.route('/posts/<id>/', methods=['PUT'])
+# def put_post(id, title = None, body = None, userId = None):
+#     """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
+#     post = Post.queryfilter_by(id = id).all()
 
-    if title == None or body == None or userId == None:
-        title = request.json['title']
-        body = request.json['body']
-        userId = request.json['userId']
+#     if title == None or body == None or userId == None:
+#         title = request.json['title']
+#         body = request.json['body']
+#         userId = request.json['userId']
 
-    post.title = title
-    post.body = body
-    post.userId = userId
+#     post.title = title
+#     post.body = body
+#     post.userId = userId
 
-    db.session.upgrade(post)
-    db.session.commit()
+#     db.session.upgrade(post)
+#     db.session.commit()
 
-    return redirect("/posts/<id>")
-    return post_schema.jsonify(post)
+#     return redirect("/posts/<id>")
+#     return post_schema.jsonify(post)
 
 
 # PATCH Routes
 @app.route('/users/<userId>', methods=['PATCH'])
 def patch_user(userId, name = None):
-    """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
-    user = User.queryfilter_by(id = userId).all()
+    """ Upravenie užívateľa """
+    user = User.query.filter_by(id = userId).first()
 
-    if name == None:
-        name = request.json['name']
+    # if name == None:
+    #     name = request.json['name']
 
     user.name = name
 
-    db.session.upgrade(user)
     db.session.commit()
 
-    return redirect("/users/<userId>")
+    return redirect(f"/users/{userId}")
 
 
 @app.route('/posts/<id>', methods=['PATCH'])
 def patch_post(id, title = None, body = None, userId = None):
     """ Upravenie príspevku - potrebné validovať userID pomocou externej API """
-    post = Post.queryfilter_by(id = id).all()
+    post = Post.query.filter_by(id = id).first()
 
-    if request.json['title']:
-        title = request.json['title']
-    if request.json['body']:
-        body = request.json['body']
-    if request.json['userId']:
-        userId = request.json['userId']
+    # if request.json['title']:
+    #     title = request.json['title']
+    # if request.json['body']:
+    #     body = request.json['body']
+    # if request.json['userId']:
+    #     userId = request.json['userId']
 
-    if not title == None:
+    if title is not None:
         post.title = title
-    if not body == None:
+    if body is not None:
         post.body = body
-    if userId:
+    if userId is not None:
         post.userId = userId
 
-    db.session.upgrade(post)
     db.session.commit()
 
-    return redirect("/posts/<id>")
+    return redirect(f"/posts/{id}")
 
 
 # DELETE Routes
 @app.route('/users/<userId>', methods=['DELETE'])
 def delete_user(userId):
-    """ Odstráni užívateľa a jeho články. """
+    """ Odstráni užívateľa ale nie jeho články. """
     user = User.query.filter_by(id = userId).first() # .first_or_404
 
     db.session.delete(user)

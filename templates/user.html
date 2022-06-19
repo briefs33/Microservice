@@ -1,7 +1,22 @@
 {% extends "layout.html" %}
 
 {% block body %}
-        <a href="/users/{{ userId }}/posts">Zobraziť články užívateľa</a>
-        <a href="/users/{{ userId }}/new_post" >Vytvoriť článok</a>
-        <a href="/users/{{ userId }}/delete">Odstrániť užívateľa - Toto je blaf.</a>
+        <a href="/users/{{ user['id'] }}/posts">Zobraziť články užívateľa</a>
+        <a href="/users/{{ user['id'] }}/new_post" >Vytvoriť článok</a>
+        <a href="/users/{{ user['id'] }}/delete">Odstrániť užívateľa</a>
+
+        <form action="/users/{{ user['id'] }}" method="post">
+            <input autocomplete="off" autofocus name="name" placeholder="{{ user['name'] }}" type="text" value="{{ user['name'] }}">
+            <input type="submit" value="Upraviť">
+        </form>
+
+        <script>
+            document.querySelector('form').onsubmit = function() {
+                if (!document.querySelector('input').value) {
+                    alert("Zadajte meno!");
+                    return false;
+                }
+                return true;
+            };
+        </script>
 {% endblock %}

@@ -5,6 +5,26 @@
         <p class="title">{{ post['title'] }}</p>
         <p class="body">{{ post['body'] }}</p>
         <a href="/">Upraviť článok - Blaf!</a>
-        <a href="/posts/{{ post['id'] }}/delete">Odstrániť článok - Blaf!</a>
+        <a href="/posts/{{ post['id'] }}/delete">Odstrániť článok</a>
         <a href="/users/{{ post['userId'] }}">Zobraziť autora</a>
+
+        <form action="/posts/{{ post['id'] }}" method="post">
+            <input autocomplete="off" autofocus name="title" placeholder="Názov článku" type="text" value="{{ post['title'] }}">
+            <textarea name="body" placeholder="Článok" rows="12" cols="60">{{ post['body'] }}</textarea>
+            <input type="submit" value="Uložiť">
+        </form>
+
+        <script>
+            document.querySelector('form').onsubmit = function() {
+                if (!document.querySelector('input').value) {
+                    alert("Zadajte názov článku!");
+                    return false;
+                }
+                else if (!document.querySelector('textarea').value) {
+                    alert("Napíšte článok!");
+                    return false;
+                }
+                return true;
+            };
+        </script>
 {% endblock %}
