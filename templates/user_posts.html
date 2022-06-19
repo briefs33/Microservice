@@ -6,11 +6,9 @@
         <!-- <a href="users/{{ user['id'] }}/posts">{{ user["name"] }}</a> -->
         <!-- <a href="posts?id={{ user['id'] }}">{{ user["name"] }}</a> -->
 
-        <h1>Zoznam článkov uživateľa {{ post['userId'] }}</h1>
-
     {% for post in posts %}
         <p class="id">{{ post["id"] }}</p>
-        <h1><a href="/posts/{{ post['id'] }}" class="title">{{ post["title"] }}</a></h1>
+        <a href="/posts/{{ post['id'] }}" class="title">{{ post["title"] }}</a>
         <p class="body">{{ post["body"][:150] }}</p>
     {% endfor %}
 {% endblock %}

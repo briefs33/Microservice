@@ -2,12 +2,10 @@
 
 {% block body %}
         <h1>Nový článok</h1>
-        <form action="/posts" method="post">
-            <input disabled name="title" value="{{ user['id'] }}" type="text">
+        <form action="/users/{{ userId }}/posts" method="post">
+            <!-- <input disabled name="title" value="{{ userId }}" type="text"> -->
             <input autocomplete="off" autofocus name="title" placeholder="Názov článku" type="text">
             <textarea name="body" placeholder="Článok" rows="12" cols="60"></textarea>
-            <select name="userId">
-                <option disabled selected value="{{ user['id'] }}">{{ user['id'] }}</option>
             <input type="submit" value="Uložiť">
         </form>
 
@@ -19,10 +17,6 @@
                 }
                 else if (!document.querySelector('textarea').value) {
                     alert("Napíšte článok!");
-                    return false;
-                }
-                else if (!document.querySelector('select').value) {
-                    alert("Zvolte autora!");
                     return false;
                 }
                 return true;

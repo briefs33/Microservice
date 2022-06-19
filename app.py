@@ -267,13 +267,13 @@ def add_user():
     users_dict.append(thisdict)
 
 
-@app.route('/posts', methods=['POST'])
-def add_post():
+@app.route('/users/<userId>/posts', methods=['POST'])
+def add_post(userId):
     """ Pridá nový článok do databázy, a vráti ???
     Pridanie príspevku - potrebné validovať userID pomocou externej API """
     title = request.form.get("title")
     body = request.form.get("body")
-    userId = request.form.get("userId")
+    # userId = request.form.get("userId")
 
     if not title or not body or not userId:
        return render_template("new_post.html?chyba=no_title_or_body_or_who_you_are")

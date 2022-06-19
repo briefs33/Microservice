@@ -116,6 +116,12 @@ a{
 
 h1{
     font-size: 1.5em;
+    color: sienna;
+    text-decoration: none;
+}
+
+.title{
+    font-size: 1.5em;
     color: salmon;
     text-decoration: none;
 }

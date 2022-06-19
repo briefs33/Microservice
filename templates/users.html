@@ -4,7 +4,8 @@
         <h1>Zoznam užívateľov</h1>
 
     {% for user in users %}
-        <a href="users/{{ user['id'] }}">{{ user["name"] }}</a>
+        <p class="id">{{ user['id'] }}</p>
+        <a href="/users/{{ user['id'] }}" class="title">{{ user["name"] }}</a>
         <!-- <a href="posts?id={{ user['id'] }}">{{ user["name"] }}</a> -->
     {% endfor %}
 {% endblock %}

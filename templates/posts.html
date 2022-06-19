@@ -5,7 +5,8 @@
 
     {% for post in posts %}
         <p class="id">{{ post["id"] }}</p>
-        <h1><a href="/posts/{{ post['id'] }}" class="title">{{ post["title"] }}</a></h1>
+        <a href="/posts/{{ post['id'] }}" class="title">{{ post["title"] }}</a>
         <p class="body">{{ post["body"][:150] }}</p>
+        <a href="/users/{{ post['userId'] }}">Zobraziť autora</a>
     {% endfor %}
 {% endblock %}

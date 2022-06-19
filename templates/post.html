@@ -2,8 +2,9 @@
 
 {% block body %}
         <p class="id">{{ post["id"] }}</p>
-        <h1>{{ post["title"] }}</h1>
+        <p class="title">{{ post["title"] }}</p>
         <p class="body">{{ post["body"] }}</p>
-        <a href="/" class="title">Upraviť článok - Blaf!</a>
-        <a href="/" class="title">Odstrániť článok - Blaf!</a>
+        <a href="/">Upraviť článok - Blaf!</a>
+        <a href="/">Odstrániť článok - Blaf!</a>
+        <a href="/users/{{ post['userId'] }}">Zobraziť autora</a>
 {% endblock %}
