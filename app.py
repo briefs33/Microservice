@@ -44,9 +44,9 @@ import os
 # https://flask.palletsprojects.com
 # https://stackoverflow.com/
 # https://python-adv-web-apps.readthedocs.io/en/latest/flask_db2.html [filter_by(id/userId).all()]
-#
-#
-#
+# https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/ [User.query.filter_by(username=username).first()]
+# https://pythonexamples.org/python-access-list-items/
+# 
 #
 #
 #
@@ -118,12 +118,6 @@ class Post(db.Model):
     def __repr__(self):
         return '<Post %r>' % self.title
 
-# def last_row(Table: type, *, session): # -> Table
-#     primary_key = inspect(Table).primary_key[0].name # must be an arithmetic type
-#     primary_key_row = getattr(Table, primary_key)
-#     # get first, sorted by negative ID (primary key)
-#     return session.query(Table).order_by(-primary_key_row).first()
-
 
 # User Schema
 class UserSchema(ma.Schema):
@@ -174,21 +168,13 @@ def get_users():
     result = users_schema.dump(users)
     return render_template("users.html", users = result)
     return render_template("users.html", users = jsonify(result)) # result.data
-    return render_template("users.html", users = users_dict)
 
 
 @app.route('/users/<userId>', methods = ['GET'])
 def get_user(userId):
     """ Vráti užívateľa na základe userId. """
     return render_template("user.html", userId = userId) # result.data
-    # user = User.query.get(userId)
     return render_template("user.html", user = jsonify(result)) # result.data
-    # userId = request.args.get("userId", "None")
-    output = {}
-    # for d in posts_dict:
-    #     if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-    #         output['post{}'.format(d['id'])] = d
-    return render_template("user.html", user = output)
 
 
 @app.route('/posts', methods = ['GET'])
@@ -198,7 +184,6 @@ def get_posts():
     result = posts_schema.dump(posts)
     return render_template("posts.html", posts = result)
     return render_template("posts.html", posts = jsonify(result)) # result.data
-    return render_template("posts.html", posts = posts_dict)
 
 
 @app.route('/posts/<id>', methods = ['GET'])
@@ -208,14 +193,6 @@ def get_post(id):
     post = Post.query.get(id)
     return render_template("post.html", post = post)
     return render_template("post.html", post = post_schema.jsonify(post))
-    output = {}
-
-    # for d in posts_dict:
-    #     if int(d['id']) == int(id):
-    #         output = d
-    #         break
-    # print(int(id))
-    return render_template("post.html", post = output)
 
 
 @app.route('/users/<userId>/posts', methods = ['GET'])
@@ -225,13 +202,6 @@ def get_user_posts(userId):
     result = posts_schema.dump(posts)
     return render_template("posts.html", posts = result)
     return render_template("posts.html", posts = jsonify(result)) # result.data
-    output = {}
-
-    # for d in posts_dict:
-    #     if int(d['userId']) == int(userId): # upravuje poradie príspevkov
-    #         output['post{}'.format(d['userId'])] = d
-    # print(int(userId))
-    return render_template("posts.html", posts = output)
 
 
 @app.route('/users/<userId>/new_post', methods=['GET'])
@@ -243,13 +213,13 @@ def new_post(userId):
 @app.route('/users/<userId>/delete', methods=['GET'])
 def del_user(userId):
     """ Zavolá funkciu pre odstránenie užívateľa a jeho článkov. """
-    delete_user(userId)
+    return delete_user(userId)
 
 
 @app.route('/posts/<id>/delete', methods=['GET'])
 def del_post(id):
     """ Zavolá funkciu pre odstránenie príspevku. """
-    delete_post(id)
+    return delete_post(id)
 
 
 # POST Routes
@@ -257,7 +227,7 @@ def del_post(id):
 def signin():
     """ Po úspešnom prihlásení užívateľa vráti domovskú stránku. """
     message = request.form.get("name", "None")
-    user = User.query.filter_by(name = message).first()
+    user = User.query.filter_by(name = message).first() # .first_or_404
 
     if user is not None:
         user_session['name'] = user.name
@@ -282,15 +252,6 @@ def add_user():
     db.session.commit()
 
     return redirect("/users")
-    return user_schema.jsonify(new_user)
-    userId = int(users_dict[-1]['id']) + 1
-
-    thisdict = {
-        "id": userId,
-        "name": name
-    }
-
-    users_dict.append(thisdict)
 
 
 @app.route('/users/<userId>/posts', methods=['POST'])
@@ -310,28 +271,14 @@ def add_post(userId):
     db.session.commit()
 
     return redirect("/posts")
-    return post_schema.jsonify(new_post)
-    id = int(posts_dict[-1]['id']) + 1
 
-    thisdict = {
-        "id": id,
-        "title": title,
-        "body": body,
-        "userId": userId
-    }
-
-    posts_dict.append(thisdict)
-
-
-
-""" Neoverené: """
 
 @app.route('/users/<userId>', methods=['POST'])
 def update_user(userId):
     """ Zavolá funkciu na zmenu užívateľských údajov. """
     name = request.form.get("name")
 
-    put_user(userId, name)
+    return put_user(userId, name)
     # patch_user(userId, name)
 
 
@@ -342,7 +289,7 @@ def update_post(id):
     body = request.form.get("body")
     userId = request.form.get("userId")
 
-    put_post(id, title, body, userId)
+    return put_post(id, title, body, userId)
     # patch_post(id, title, body, userId)
 
 
@@ -361,7 +308,7 @@ def put_user(userId, name = None):
     # db.session.commit()
 
     # return redirect("/users/<userId>")
-    patch_user(userId, name)
+    return patch_user(userId, name)
 
 
 @app.route('/posts/<id>/', methods=['PUT'])
@@ -383,13 +330,6 @@ def put_post(id, title = None, body = None, userId = None):
 
     return redirect("/posts/<id>")
     return post_schema.jsonify(post)
-    for d in posts_dict:
-        if int(d['id']) == int(id):
-            d["title"] = title
-            d["body"] = body
-            d["userId"] = userId
-            return (d, {"Správa": "Príspevok bol upravený."})
-    return {'Chyba': "Príspevok som nenašiel!"}
 
 
 # PATCH Routes
@@ -432,21 +372,13 @@ def patch_post(id, title = None, body = None, userId = None):
     db.session.commit()
 
     return redirect("/posts/<id>")
-    for d in posts_dict:
-        if int(d['id']) == int(id):
-            d["title"] = title
-            d["body"] = body
-            return (d, {"Správa": "Príspevok bol upravený."})
-    return {'Chyba': "Príspevok som nenašiel!"}
 
 
 # DELETE Routes
 @app.route('/users/<userId>', methods=['DELETE'])
 def delete_user(userId):
     """ Odstráni užívateľa a jeho články. """
-    user = User.query.filter_by(userId = userId).all()
-    # user = User.query.filter_by(id = userId).all()
-    # user = Post.query.filter_by(userId = userId).all()
+    user = User.query.filter_by(id = userId).first() # .first_or_404
 
     db.session.delete(user)
     db.session.commit()
@@ -457,20 +389,12 @@ def delete_user(userId):
 @app.route('/posts/<id>', methods=['DELETE'])
 def delete_post(id):
     """ Odstráni príspevok. """
-    post = Post.query.filter_by(id = id).all()
+    post = Post.query.filter_by(id = id).first() # .first_or_404
 
     db.session.delete(post)
     db.session.commit()
 
     return redirect("/posts")
-    post = get_posts(id)
-    if post == {'Chyba': 404}:
-        return {'Chyba': "Príspevok som nenašiel!"}
-    posts_dict.pop(id) # put_post -> for d in posts_dict: if int(d['id']) == int(id):
-
-    post = Post.query.filter_by(id = id).all()
-
-    return post_schema.jsonify(post)
 
 
 # python cls:
