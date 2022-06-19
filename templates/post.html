@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 
 {% block body %}
-        <p class="id">{{ post["id"] }}</p>
-        <p class="title">{{ post["title"] }}</p>
-        <p class="body">{{ post["body"] }}</p>
+        <p class="id">{{ post['id'] }}</p>
+        <p class="title">{{ post['title'] }}</p>
+        <p class="body">{{ post['body'] }}</p>
         <a href="/">Upraviť článok - Blaf!</a>
-        <a href="/">Odstrániť článok - Blaf!</a>
+        <a href="/posts/{{ post['id'] }}/delete">Odstrániť článok - Blaf!</a>
         <a href="/users/{{ post['userId'] }}">Zobraziť autora</a>
 {% endblock %}

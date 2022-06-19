@@ -4,9 +4,9 @@
         <h1>Zoznam článkov</h1>
 
     {% for post in posts %}
-        <p class="id">{{ post["id"] }}</p>
-        <a href="/posts/{{ post['id'] }}" class="title">{{ post["title"] }}</a>
-        <p class="body">{{ post["body"][:150] }}</p>
+        <p class="id">{{ post['id'] }}</p>
+        <a href="/posts/{{ post['id'] }}" class="title">{{ post['title'] }}</a>
+        <p class="body">{{ post['body'][:150] }}</p>
         <a href="/users/{{ post['userId'] }}">Zobraziť autora</a>
     {% endfor %}
 {% endblock %}

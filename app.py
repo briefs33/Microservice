@@ -1,4 +1,5 @@
 
+from unicodedata import name
 from flask import Flask, make_response, redirect, render_template, request, jsonify
 import requests
 import json
@@ -28,7 +29,7 @@ import os
 # 18.6      = 3h 0min (+3h CSS)
 # 19.6 8:00AM - 10:30AM (2h 30min) [filter_by(id/userId).all()]
 # 19.6 12:00PM - 4:00PM (4h) [Prekopanie stránky]
-# 19.6 PM - PM (h)
+# 19.6 6:00PM - PM (h) [user_session]
 # 19.6      = h min
 #
 # """ Zdroje:
@@ -141,11 +142,16 @@ post_schema = PostSchema()
 posts_schema = PostSchema(many = True)
 
 
+# Session informations
+user_session = {"json": "false", "userId": "", "name": ""}
+
+
 # GET Routes
 @app.route('/', methods = ['GET'])
 def index():
     """ Vráti domovskú stránku. """
-    message = request.args.get("message", "None")
+    message = user_session.get("json")
+    # message = request.args.get("message", "None")
     return render_template("index.html", message = message)
 
 
@@ -251,7 +257,15 @@ def del_post(id):
 def signin():
     """ Po úspešnom prihlásení užívateľa vráti domovskú stránku. """
     message = request.form.get("name", "None")
-    return render_template("index.html", message = message)
+    user = User.query.filter_by(name = message).first()
+
+    if user is not None:
+        user_session['name'] = user.name
+        user_session['userId'] = user.id
+    else:
+        user_session['name'] = ""
+        user_session['userId'] = ""
+    return render_template("index.html", message = user_session)
 
 
 @app.route('/register', methods=['POST'])

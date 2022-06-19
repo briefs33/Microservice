@@ -3,7 +3,6 @@
 {% block body %}
         <h1>Nový článok</h1>
         <form action="/users/{{ userId }}/posts" method="post">
-            <!-- <input disabled name="title" value="{{ userId }}" type="text"> -->
             <input autocomplete="off" autofocus name="title" placeholder="Názov článku" type="text">
             <textarea name="body" placeholder="Článok" rows="12" cols="60"></textarea>
             <input type="submit" value="Uložiť">
