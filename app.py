@@ -1,12 +1,11 @@
-
-from unicodedata import name
-from flask import Flask, make_response, redirect, render_template, request, jsonify
-import requests
 import json
+import os
+import requests
+from flask import Flask, make_response, redirect, render_template, request, jsonify
+from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.inspection import inspect
-from flask_marshmallow import Marshmallow
-import os
+from unicodedata import name
 
 
 # 15.6 1:33PM - 4:33PM (3h) 
@@ -30,8 +29,17 @@ import os
 # 19.6 8:00AM - 10:30AM (2h 30min) [filter_by(id/userId).all()]
 # 19.6 12:00PM - 4:00PM (4h) [Prekopanie stránky]
 # 19.6 6:00PM - 8:30PM (2h 30min) [user_session]
-# 19.6 9:15PM - PM (h)
-# 19.6      = h min
+# 19.6 9:15PM - 11:00PM (1h 45min)
+# 19.6      = 10h 45min
+# 20.6 7:00AM - 8:00AM (1h)
+# 20.6 M - M (h min)
+# 20.6 M - M (h min)
+# 20.6 M - M (h min)
+# 20.6      = h min
+# 21.6 M - M (h min)
+# 21.6 M - M (h min)
+# 21.6 M - M (h min)
+# 21.6      = h min
 #
 # """ Zdroje:
 # https://www.youtube.com/watch?v=qbLc5a9jdXo&ab_channel=CalebCurry
@@ -48,7 +56,6 @@ import os
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/ [User.query.filter_by(username=username).first()]
 # https://pythonexamples.org/python-access-list-items/
 # https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_orm_updating_objects.htm
-#
 #
 #
 #
@@ -135,6 +142,10 @@ user_schema = UserSchema()
 users_schema = UserSchema(many = True)
 post_schema = PostSchema()
 posts_schema = PostSchema(many = True)
+# user_schema = UserSchema(strict = True)
+# users_schema = UserSchema(many = True, strict = True)
+# post_schema = PostSchema(strict = True)
+# posts_schema = PostSchema(many = True, strict = True)
 
 
 # Session informations
@@ -228,8 +239,8 @@ def del_post(id):
 @app.route('/', methods = ['POST'])
 def signin():
     """ Po úspešnom prihlásení užívateľa vráti domovskú stránku. """
-    message = request.form.get("name", "None")
-    user = User.query.filter_by(name = message).first() # .first_or_404
+    name = request.form.get("name", "None")
+    user = User.query.filter_by(name = name).first() # .first_or_404
 
     if user is not None:
         user_session['name'] = user.name
@@ -406,5 +417,5 @@ def delete_post(id):
 # export --- export FLASK_ENV=development
 
 # Run Server
-# if __name__ == '__main__':
-#     app.run(debug = False)
+if __name__ == '__main__':
+    app.run(debug = False)
