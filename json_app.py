@@ -199,7 +199,7 @@ def user(userId):
 
         return redirect(f"/users/{userId}")
 
-    elif request.method == 'DELETE':
+    elif request.method == 'DELETE': # OK
         get_user = request.get_json()
         get_userId = get_user['userId']
         user = User.query.filter_by(id = get_userId).first() # .first_or_404
@@ -327,7 +327,7 @@ def post(id):
 
         return redirect(f"/posts/{id}")
 
-    elif request.method == 'DELETE':
+    elif request.method == 'DELETE': # OK
         get_post = request.get_json()
         get_id = get_post['id']
         post = Post.query.filter_by(id = get_id).first() # .first_or_404
@@ -340,108 +340,6 @@ def post(id):
 
         result = {"Úspech": f"Príspevok >>{post}<< bol úspešne odstránený."}
         return jsonify(result)
-
-
-@app.route('/registration', methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
-def registration():
-    """ Využíva metódy:
-    'GET': Vráti formulár pre registráciu nového užívateľa.
-    'POST': Pridá nového užívateľa do databázy, a vráti ???
-        Pridanie užívateľa - potrebné validovať userID pomocou externej API
-    'PUT':
-    'PATCH':
-    'DELETE':
-    """
-    if request.method == 'GET':
-        return render_template("registration.html")
-    elif request.method == 'POST':
-        name = request.form.get("name")
-        if not name:
-            return render_template("registration.html?chyba=no_name")
-
-        new_user = User(name = name)
-
-        db.session.add(new_user)
-        db.session.commit()
-
-        return redirect("/users")
-    elif request.method == 'PUT':
-        pass
-    elif request.method == 'PATCH':
-        pass
-    elif request.method == 'DELETE':
-        pass
-    else:
-        return
-
-
-@app.route('/login', methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
-def login():
-    """ Využíva metódy:
-    'GET': Vráti formulár pre prihlásenie užívateľa
-    'POST':
-    'PUT':
-    'PATCH':
-    'DELETE':
-    """
-    if request.method == 'GET':
-        return render_template("login.html")
-    elif request.method == 'POST':
-        pass
-    elif request.method == 'PUT':
-        pass
-    elif request.method == 'PATCH':
-        pass
-    elif request.method == 'DELETE':
-        pass
-    else:
-        return
-
-
-@app.route('/users/<userId>/delete', methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
-def delete_user(userId):
-    """ Využíva metódy:
-    'GET': Zavolá funkciu pre odstránenie užívateľa a jeho článkov.
-    'POST':
-    'PUT':
-    'PATCH':
-    'DELETE':
-    """
-    if request.method == 'GET':
-        return delete_user(userId)
-    elif request.method == 'POST':
-        pass
-    elif request.method == 'PUT':
-        pass
-    elif request.method == 'PATCH':
-        pass
-    elif request.method == 'DELETE':
-        pass
-    else:
-        return
-
-
-@app.route('/posts/<id>/delete', methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
-def delete_post(id):
-    """ Využíva metódy:
-    'GET': Zavolá funkciu pre odstránenie príspevku.
-    'POST':
-    'PUT':
-    'PATCH':
-    'DELETE':
-    """
-    if request.method == 'GET':
-        return delete_post(id)
-    elif request.method == 'POST':
-        pass
-    elif request.method == 'PUT':
-        pass
-    elif request.method == 'PATCH':
-        pass
-    elif request.method == 'DELETE':
-        pass
-    else:
-        return
 
 
 # python cls:
