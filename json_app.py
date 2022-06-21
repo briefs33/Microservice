@@ -1,5 +1,4 @@
 import os
-from this import s
 from flask import Flask, make_response, redirect, render_template, request, jsonify
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
@@ -12,9 +11,10 @@ from flask_sqlalchemy import SQLAlchemy
 # 20.6 4:30PM - 5:30PM (1h)
 # 20.6 6:00PM - 11:00PM (5h)
 # 20.6      = 13h 45min
-# 21.6 7:00AM - 10:00M (3h)
-# 21.6 10:30M - M (h min -30min)
-# 21.6 M - M (h min)
+# 21.6 7:00AM - 10:00AM (3h)
+# 21.6 10:30M - 2:30PM (4h -30min)
+# 21.6 3:00PM - PM (h min)
+# 21.6 PM - PM (h min)
 # 21.6      = h min
 #
 # """ Zdroje:
@@ -218,7 +218,7 @@ def users():
             user_get['id']
             user_get['name']
         except:
-            result = {"Chyba": "Chýba id alebo name užívateľa."}
+            result = {"Chyba": "Chýba 'id' alebo 'name' užívateľa."}
             return jsonify(result)
         else:
             user_get_id = user_get['id']
@@ -244,7 +244,7 @@ def users():
         try:
             user_get['id']
         except:
-            result = {"Chyba": "Chýba id užívateľa."}
+            result = {"Chyba": "Chýba 'id' užívateľa."}
             return jsonify(result)
         else:
             user_get_id = user_get['id']
@@ -287,7 +287,7 @@ def posts():
             post_get['body']
             post_get['userId']
         except:
-            result = {"Chyba": "Chýba title, body alebo userId užívateľa."}
+            result = {"Chyba": "Chýba 'title', 'body' alebo 'userId' príspevku."}
             return jsonify(result)
         else:
             post_get_title = post_get['title']
@@ -397,7 +397,7 @@ def posts():
                 result = posts_schema.dump(posts_query)
                 return jsonify(result)
 
-        result = {"Chyba: Chýba čo ['what'], z čoho ['from'] alebo na čo ['to'] príspevku."}
+        result = {"Chyba: Chýba 'what' => ('id', 'title', 'body', 'userId'), 'from' => (z čoho) alebo 'to' => (na čo) príspevku."}
         return jsonify(result)
 
     elif request.method == 'DELETE':
@@ -405,7 +405,7 @@ def posts():
         try:
             post_get['id']
         except:
-            result = {"Chyba: Chýba id príspevku."}
+            result = {"Chyba: Chýba 'id' príspevku."}
             return jsonify(result)
         else:
             post_get_id = post_get['id']
@@ -447,7 +447,7 @@ def user(userId):
         try:
             user_get['name']
         except:
-            result = {"Chyba: Chýba name užívateľa."}
+            result = {"Chyba: Chýba 'name' užívateľa."}
             return jsonify(result)
         else:
             user_get_name = user_get['name']
@@ -509,7 +509,7 @@ def user_posts(userId):
             post_get['title']
             post_get['body']
         except:
-            result = {"Chyba": "Chýba title alebo body príspevku."}
+            result = {"Chyba": "Chýba 'title' alebo 'body' príspevku."}
             return jsonify(result)
         else:
             post_get_title = post_get['title']
@@ -530,7 +530,7 @@ def user_posts(userId):
             post_get['title']
             post_get['body']
         except:
-            result = {"Chyba: Chýba id, title alebo body príspevku."}
+            result = {"Chyba: Chýba 'id', 'title' alebo 'body' príspevku."}
             return jsonify(result)
         else:
             post_get_id = post_get['id']
@@ -601,7 +601,7 @@ def post(id):
             post_get['body']
             post_get['userId']
         except:
-            result = {"Chyba: Chýba title, body alebo userId príspevku."}
+            result = {"Chyba: Chýba 'title', 'body' alebo 'userId' príspevku."}
             return jsonify(result)
         else:
             post_get_title = post_get['title']
