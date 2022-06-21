@@ -5,30 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 # from sqlalchemy.inspection import inspect
 
 
-# 20.6 8:00AM - 10:30M (2h 30min) [JSON + PostMan]
-# 20.6 11:00AM - 11:45M (1h 45min)
-# 20.6 12:15PM - 3:45PM (3h 30min)
-# 20.6 4:30PM - 5:30PM (1h)
-# 20.6 6:00PM - 11:00PM (5h)
-# 20.6      = 13h 45min
-# 21.6 7:00AM - 10:00AM (3h)
-# 21.6 10:30M - 2:30PM (4h -30min)
-# 21.6 3:00PM - PM (h min)
-# 21.6 PM - PM (h min)
-# 21.6      = h min
-#
-# """ Zdroje:
-# https://www.youtube.com/playlist?list=PLNAMH_0HgWT812u973ptEbZlQ2uIqp-II
-# https://docs.python.org/3/tutorial/errors.html
-#
-#
-#
-#
-#
-#
-# """
-
-
 # Init app
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -342,7 +318,7 @@ def posts():
         result = {"Chyba": "Neviem ktorý príspevok mám upraviť, zadaj 'id' príspevku."}
         return jsonify(result)
 
-    elif request.method == 'PATCH': # Netestované
+    elif request.method == 'PATCH': # AttributeError: 'list' object has no attribute 'title' -> pridať cyklus
         post_get = request.get_json()
         try:
             post_get['what']
@@ -355,49 +331,52 @@ def posts():
             post_get_what = post_get['what']
             post_get_from = post_get['from']
             post_get_to = post_get['to']
+            print(post_get_what)
+            print(post_get_from)
+            print(post_get_to)
 
-        if post_get_what and post_get_from and post_get_to:
-            if post_get_what == 'id':
-                posts_query = Post.query.filter_by(id = post_get_from).all()
-                posts_query.id = post_get_to
+        # if post_get_what and post_get_from and post_get_to:
+        #     if post_get_what == 'id':
+        #         posts_query = Post.query.filter_by(id = post_get_from).all()
+        #         posts_query.id = post_get_to
 
-                db.session.commit()
+        #         db.session.commit()
 
-                posts_query = Post.query.filter_by(id = post_get_to).all()
-                result = posts_schema.dump(posts_query)
-                return jsonify(result)
+        #         posts_query = Post.query.filter_by(id = post_get_to).all()
+        #         result = posts_schema.dump(posts_query)
+        #         return jsonify(result)
 
-            elif post_get_what == 'title':
-                posts_query = Post.query.filter_by(title = post_get_from).all()
-                posts_query.title = post_get_to
+        #     elif post_get_what == 'title':
+        #         posts_query = Post.query.filter_by(title = post_get_from).all()
+        #         posts_query.title = post_get_to
 
-                db.session.commit()
+        #         db.session.commit()
 
-                posts_query = Post.query.filter_by(title = post_get_to).all()
-                result = posts_schema.dump(posts_query)
-                return jsonify(result)
+        #         posts_query = Post.query.filter_by(title = post_get_to).all()
+        #         result = posts_schema.dump(posts_query)
+        #         return jsonify(result)
 
-            elif post_get_what == 'body':
-                posts_query = Post.query.filter_by(body = post_get_from).all()
-                posts_query.body = post_get_to
+        #     elif post_get_what == 'body':
+        #         posts_query = Post.query.filter_by(body = post_get_from).all()
+        #         posts_query.body = post_get_to
 
-                db.session.commit()
+        #         db.session.commit()
 
-                posts_query = Post.query.filter_by(body = post_get_to).all()
-                result = posts_schema.dump(posts_query)
-                return jsonify(result)
+        #         posts_query = Post.query.filter_by(body = post_get_to).all()
+        #         result = posts_schema.dump(posts_query)
+        #         return jsonify(result)
 
-            elif post_get_what == 'userId':
-                posts_query = Post.query.filter_by(userId = post_get_from).all()
-                posts_query.userId = post_get_to
+        #     elif post_get_what == 'userId':
+        #         posts_query = Post.query.filter_by(userId = post_get_from).all()
+        #         posts_query.userId = post_get_to
 
-                db.session.commit()
+        #         db.session.commit()
 
-                posts_query = Post.query.filter_by(userId = post_get_to).all()
-                result = posts_schema.dump(posts_query)
-                return jsonify(result)
+        #         posts_query = Post.query.filter_by(userId = post_get_to).all()
+        #         result = posts_schema.dump(posts_query)
+        #         return jsonify(result)
 
-        result = {"Chyba: Chýba 'what' => ('id', 'title', 'body', 'userId'), 'from' => (z čoho) alebo 'to' => (na čo) príspevku."}
+        result = {"Chyba": "Chýba 'what' => ('id', 'title', 'body', 'userId'), 'from' => (z čoho) alebo 'to' => (na čo) príspevku."}
         return jsonify(result)
 
     elif request.method == 'DELETE':
@@ -428,8 +407,8 @@ def user(userId):
     """ Využíva metódy:
     'GET': Vráti užívateľa na základe userId.
     'POST': Zavolá funkciu na zmenu užívateľských údajov pre HTML.
-    'PUT': Upravenie užívateľa - potrebné validovať userID pomocou externej API ???
-    'PATCH': Upravenie užívateľa - potrebné validovať userID pomocou externej API ???
+    'PUT': Upraví údaje užívateľa. - potrebné validovať userID pomocou externej API ???
+    'PATCH': Upraví údaje užívateľa. - potrebné validovať userID pomocou externej API ???
     'DELETE': Odstráni užívateľa ale nie jeho články.
     """
     if request.method == 'GET':
@@ -456,10 +435,10 @@ def user(userId):
 
         if user_query is None and userId:
             user_query = User.query.filter_by(id = userId).first()
+            if user_query:
+                user_query.name = user_get_name
 
-            user_query.name = user_get_name
-
-            db.session.commit()
+                db.session.commit()
 
             user_query = User.query.filter_by(id = userId).first()
             return user_schema.jsonify(user_query)
@@ -583,7 +562,7 @@ def post(id):
     'GET': Vráti príspevok na základe id.
         - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
     'POST': Metóda zatiaľ nie je definovaná.
-    'PUT': Upravenie príspevku - potrebné validovať userID pomocou externej API
+    'PUT': Upraví príspevok na základe id. - potrebné validovať userID pomocou externej API
     'DELETE': Odstráni príspevok.
     """
     if request.method == 'GET':
@@ -637,14 +616,6 @@ def post(id):
         result = {"Úspech": f"Príspevok >>{post_query.title}<< bol úspešne odstránený."}
         return jsonify(result)
 
-
-# python cls:
-#     >>> from app import db
-#     >>> db.create_all()
-
-# First run
-# export --- export FLASK_APP=application.py
-# export --- export FLASK_ENV=development
 
 # Run Server
 if __name__ == '__main__':
