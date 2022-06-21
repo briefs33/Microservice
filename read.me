@@ -1,0 +1,136 @@
+    Popis zložiek a súborov
+static - obsahuje súbory CSS a JavaScript
+templates - obsahuje súbory HTML
+app.py - webová aplikácia na základe Flask
+json_app.py - aplikácia s requestmi JSON
+.mockend.json - súbor JSON na generovanie Mockend API
+API_App.postman_collection.json - vyexportovaný súbor Postman Collection v2.1
+requirments.txt - textový súbor obsahujúci potrebné Python doplnky
+
+
+
+
+    Dokumentácia Swagger
+https://app.swaggerhub.com/apis/CAPSULEBRIEFS/API-Microservice/1.0.0
+
+
+
+
+    Popis inštalácie a prvého spustenia vo Visual Studio Code
+1. Namapovanie projektu
+
+2. Vytvorenie virtuálneho prostredia pomocou príkazu:
+    python -m venv .venv
+
+3. Aktivovanie virtuálneho prostredia pomocou príkazu:
+    Platforma       Shell               Command to activate virtual environment
+    POSIXZ          bash/zsh            $ source <venv>/bin/activate
+                    fish                $ source <venv>/bin/activate.fish
+                    csh/tcsh            $ source <venv>/bin/activate.csh
+                    PowerShell Core     $ <venv>/bin/Activate.ps1
+    Windows         cmd.exe             C:\> <venv>\Scripts\activate.bat
+                    PowerShell          PS C:\> <venv>\Scripts\Activate.ps1
+
+4. Inštalovanie doplnkov z textového súboru requirments.txt
+    pip install -r C:\...\requirments.txt
+
+5. Otvorenie aplikácie Python a prepnutie do (.venv)
+
+6. Vytvorenie databázy pomocou Python príkazov:
+    >>> from app import db
+    >>> db.create_all()
+
+** Aplikáciu je možné vyexportovať a potom ju spúšťať pomocou príkazu: flask run
+** - krok nie je vyžadovaný, keďže sa v repozitáry nachádzajú dve aplikácie.
+    export FLASK_APP=application.py
+    export FLASK_ENV=development
+
+7. Zvolenie a otvorenie aplikácie:
+    app.py - webová aplikácia na základe Flask
+    json_app.py - aplikácia s requestmi JSON
+
+8. Spustenie aplikácie ľavým kliknutím myši a zvolením opcie:
+    Run Python File in Terminal
+
+** Aplikácia sa spúšťa na predvolenej localhost adrese:
+    http://127.0.0.1:5000/
+
+
+
+
+    Spotreba - celkom 67h
+app.py
+# 15.6 1:33PM - 4:33PM (3h) 
+# 15.6 6:00PM - 7:00PM (1h)
+# 15.6 5:15PM - 5:30PM (15min)
+# 15.6 7:00PM - 8:00PM (1h)
+# 15.6      = 5h 15min
+#
+# 16.6 6:45AM - 10:00AM (3h 15min)
+# 16.6 11:00AM - 12:45PM (1h 45min -15min[obed])
+# 16.6 1:15PM - 2:45PM (1h 30min) [pridanie zobrazenia príspevkov podla uzivatela]
+# 16.6 6:00PM - 7:15PM (1h 15min)
+# 16.6      = 7h 30min
+#
+# 17.6 8:00AM - 11:30 (3h 30min -30min)
+# 17.6 12:30PM - 1:30PM (1h)
+# 17.6 2:30PM - 5:00PM (2h 30min -15min)
+# 17.6 6:00PM - 9:00PM (3h -30min)
+# 17.6      = 8h 45min
+#
+# 18.6 5:00PM - 6:00PM (None) [Príprava oživenia db]
+# 18.6 7:00PM - 10:00PM (3h)
+# 18.6      = 3h 0min (+3h CSS)
+#
+# 19.6 8:00AM - 10:30AM (2h 30min) [filter_by(id/userId).all()]
+# 19.6 12:00PM - 4:00PM (4h) [Prekopanie stránky]
+# 19.6 6:00PM - 8:30PM (2h 30min) [user_session]
+# 19.6 9:15PM - 11:00PM (1h 45min)
+# 19.6      = 10h 45min
+#
+# 20.6 7:00AM - 8:00AM (1h)
+# 20.6      = 1h 0min
+#______________________
+#           = 36h 15min (+3h CSS)
+
+json.app.py
+# 20.6 8:00AM - 10:30M (2h 30min) [JSON + PostMan]
+# 20.6 11:00AM - 11:45M (1h 45min)
+# 20.6 12:15PM - 3:45PM (3h 30min)
+# 20.6 4:30PM - 5:30PM (1h)
+# 20.6 6:00PM - 11:00PM (5h)
+# 20.6      = 13h 45min
+#
+# 21.6 7:00AM - 10:00AM (3h)
+# 21.6 10:30M - 2:30PM (4h -30min)
+# 21.6 3:00PM - 5:00PM (2h -30min)
+# 21.6 5:00PM - 9:00PM (4h) [dokumentácia v Swagger]
+# 21.6      = 12h 0min
+#______________________
+#           = 25h 45min
+
+
+    Zdroje:
+app.py
+# https://www.youtube.com/watch?v=qbLc5a9jdXo&ab_channel=CalebCurry
+# https://www.w3schools.com/
+# https://www.youtube.com/watch?v=PTZiDnuC86g&ab_channel=TraversyMedia
+# https://www.youtube.com/watch?v=zdgYw-3tzfI&ab_channel=freeCodeCamp.org
+# https://www.hwlibre.com/sk/orm-object-relational-mapping/
+# https://www.sqlalchemy.org/
+# https://docs.sqlalchemy.org/en/14/orm/basic_relationships.html
+# https://marshmallow.readthedocs.io/en/stable/quickstart.html
+# https://flask.palletsprojects.com
+# https://stackoverflow.com/
+# https://python-adv-web-apps.readthedocs.io/en/latest/flask_db2.html [filter_by(id/userId).all()]
+# https://flask-sqlalchemy.palletsprojects.com/en/2.x/queries/ [User.query.filter_by(username=username).first()]
+# https://pythonexamples.org/python-access-list-items/
+# https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_orm_updating_objects.htm
+
+json.app.py
+# https://www.youtube.com/playlist?list=PLNAMH_0HgWT812u973ptEbZlQ2uIqp-II
+# https://docs.python.org/3/tutorial/errors.html
+# https://swagger.io/docs/specification/
+
+read.me
+https://docs.python.org/3/library/venv.html
