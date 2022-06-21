@@ -9,9 +9,9 @@ from flask_sqlalchemy import SQLAlchemy
 # 20.6 11:00AM - 11:45M (1h 45min)
 # 20.6 12:15PM - 3:45PM (3h 30min)
 # 20.6 4:30PM - 5:30PM (1h)
-# 20.6 6:00PM - PM (h min)
-# 20.6      = h min
-# 21.6 M - M (h min)
+# 20.6 6:00PM - 11:00PM (5h)
+# 20.6      = 13h 45min
+# 21.6 7:00AM - M (h min)
 # 21.6 M - M (h min)
 # 21.6 M - M (h min)
 # 21.6      = h min
@@ -131,6 +131,7 @@ def index():
 
         if user_session['name'] or user_session['name'] == '':
             user_query = User.query.filter_by(name = user_session['name']).first()
+
             if user_query is None:
                 user_session['prihlaseny'] = False
                 user_session['userId'] = ""
@@ -177,6 +178,7 @@ def users():
 
         if user_get and user_get_name != '':
             user_query = User.query.filter_by(name = user_get_name).first()
+
             if user_query is None:
                 user_query = User(name = user_get_name)
 
@@ -198,6 +200,7 @@ def users():
         user_get_name = user_get['name']
 
         user_query = User.query.filter_by(name = user_get_name).first()
+
         if user_query is None and user_get_id != '':
             user_query = User.query.filter_by(id = user_get_id).first()
 
@@ -215,7 +218,8 @@ def users():
         user_get = request.get_json()
         user_get_id = user_get['id']
 
-        user_query = User.query.filter_by(id = user_get_id).first() # .first_or_404
+        user_query = User.query.filter_by(id = user_get_id).first()
+
         if user_query is None:
             result = {"Chyba": f"Užívateľ >>{user_get}<< nie je v databáze."}
             return jsonify(result)
@@ -250,13 +254,14 @@ def posts():
         post_get_title = post_get['title']
         post_get_body = post_get['body']
         post_get_userId = post_get['userId']
+
         if post_get and post_get_title != '' and post_get_userId != '':
             post_query = Post(title = post_get_title, body = post_get_body, userId = post_get_userId)
 
             db.session.add(post_query)
             db.session.commit()
 
-            result = {"Úspech": f"Článok >>{post_query.title}<< bol pridaný."} # možná chyba
+            result = {"Úspech": f"Článok >>{post_query.title}<< bol pridaný."} # možná chyba => post_get_title
             return jsonify(result)
 
         result = {"Chyba": "Buď je autor neznámy, alebo titulok článku je prázdny."}
@@ -264,12 +269,13 @@ def posts():
 
     elif request.method == 'PUT': # O
         post_get = request.get_json()
-        post_get_id = post_get['id']
-        post_get_title = post_get['title']
-        post_get_body = post_get['body']
-        post_get_userId = post_get['userId']
 
         if post_get and post_get_id != '':
+            post_get_id = post_get['id']
+            post_get_title = post_get['title']
+            post_get_body = post_get['body']
+            post_get_userId = post_get['userId']
+
             post_query = Post.query.filter_by(id = post_get_id).first()
 
             if post_get_title != '':
@@ -296,6 +302,7 @@ def posts():
         post_get_to = post_get['to']
 
         if post_get and post_get_what != '' and post_get_from != '' and post_get_to != '':
+
             if post_get_what == 'id': # O
                 posts_query = Post.query.filter_by(id = post_get_from).all()
                 posts_query.id = post_get_to
@@ -336,14 +343,15 @@ def posts():
                 result = posts_schema.dump(posts_query)
                 return jsonify(result)
 
-        result = {"Chyba: Chýba čo, z čoho alebo na čo príspevku."}
+        result = {"Chyba: Chýba čo ['what'], z čoho ['from'] alebo na čo ['to'] príspevku."}
         return jsonify(result)
 
     elif request.method == 'DELETE': # O
         post_get = request.get_json()
         post_get_id = post_get['id']
 
-        post_query = Post.query.filter_by(id = post_get_id).first() # .first_or_404
+        post_query = Post.query.filter_by(id = post_get_id).first()
+
         if post_query is None:
             result = {"Chyba": f"Príspevok >>{post_get}<< nie je v databáze."}
             return jsonify(result)
@@ -355,80 +363,61 @@ def posts():
         return jsonify(result)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @app.route('/users/<userId>', methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 def user(userId):
     """ Využíva metódy:
     'GET': Vráti užívateľa na základe userId.
-    'POST': Zavolá funkciu na zmenu užívateľských údajov.
+    'POST': Zavolá funkciu na zmenu užívateľských údajov pre HTML.
     'PUT': Upravenie užívateľa - potrebné validovať userID pomocou externej API ???
     'PATCH': Upravenie užívateľa - potrebné validovať userID pomocou externej API ???
     'DELETE': Odstráni užívateľa ale nie jeho články.
     """
-    if request.method == 'GET': # OK
-        user = User.query.filter_by(id = userId).first() # .first_or_404
-        return user_schema.jsonify(user)
+    if request.method == 'GET': # O
+        user_query = User.query.filter_by(id = userId).first()
+        return user_schema.jsonify(user_query)
 
-    elif request.method == 'POST':
-        name = request.get_json()
-        return {"Chyba": f"Užívateľ >>{name}<< už existuje."}
+    elif request.method == 'POST': # O
+        """ presmerovanie pre HTML """
 
-    elif request.method == 'PUT':
-        # user = User.queryfilter_by(id = userId).all()
+        result = {"Info": "Metóda zatiaľ nie je definovaná."}
+        return jsonify(result)
 
-        if name == None:
-            name = request.json['name']
-
-        # user.name = name
-
-        # db.session.upgrade(user)
-        # db.session.commit()
-
-        # return redirect("/users/<userId>")
-        return (userId, name)
-
-    elif request.method == 'PATCH':
-        user = User.query.filter_by(id = userId).first()
-
-        name = request.json['name']
-
-        user.name = name
-
-        db.session.commit()
-
-        return redirect(f"/users/{userId}")
-
-    elif request.method == 'DELETE': # OK
+    elif request.method == 'PUT': # O
         user_get = request.get_json()
-        user_getId = user_get['userId']
-        user = User.query.filter_by(id = user_getId).first() # .first_or_404
-        if user is None:
-            result = {"Chyba": f"Užívateľ >>{user_get}<< nie je v databáze."}
+        user_get_name = user_get['name']
+
+        user_query = User.query.filter_by(name = user_get_name).first()
+
+        if user_query is None and userId != '':
+            user_query = User.query.filter_by(id = userId).first()
+
+            user_query.name = user_get_name
+
+            db.session.commit()
+
+            user_query = User.query.filter_by(id = userId).first()
+            return user_schema.jsonify(user_query) # Meno bolo úspešne zmenené.
+
+        result = {"Chyba": "Meno užívateľa už je v databáze."}
+        return jsonify(result)
+
+    elif request.method == 'PATCH': # O
+        result = {"Info": "Metóda zatiaľ nie je definovaná."}
+        return jsonify(result)
+
+    elif request.method == 'DELETE': # O
+        user_get = request.get_json()
+
+        user_query = User.query.filter_by(id = userId).first()
+
+        if user_query is None:
+            result = {"Chyba": f"Užívateľ >>{userId, user_get}<< nie je v databáze."}
             return jsonify(result)
 
-        db.session.delete(user)
+        db.session.delete(user_query)
         db.session.commit()
 
-        result = {"Úspech": f"Užívateľ >>{user}<< bol úspešne odstránený."}
+        result = {"Úspech": f"Užívateľ >>{user_query.name}<< bol úspešne odstránený."}
         return jsonify(result)
 
 
@@ -439,116 +428,136 @@ def user_posts(userId):
     'POST': Pridá nový príspevok do databázy a vráti titulok príspevku. Titulok musí byť vyplnený!
         Pridanie príspevku - potrebné validovať userID pomocou externej API
     'PUT':
-    'PATCH':
     'DELETE':
     """
-    if request.method == 'GET': # OK
-        posts = Post.query.filter_by(userId = userId).all()
-        result = posts_schema.dump(posts)
+    if request.method == 'GET': # O
+        posts_query = Post.query.filter_by(userId = userId).all()
+        result = posts_schema.dump(posts_query)
         return jsonify(result)
 
-    elif request.method == 'POST': # OK - Chýba validácia!
+    elif request.method == 'POST': # O - Chýba validácia!
         # validácia userID pomocou externej API
         # if not valit:
         #     return ...
 
-        post = request.get_json()
-        # print(post['title'], post['body'])
-        # if post['title'] != '' or post['userId'] != '':
-        #     new_post = Post(title = post['title'], body = post['body'], userId = post['userId'])
-        if post['title'] != '':
-            new_post = Post(title = post['title'], body = post['body'], userId = userId)
+        post_get = request.get_json()
 
-            db.session.add(new_post)
+        if post_get or post_get['title'] != '':
+            post_get_title = post_get['title']
+            post_get_body = post_get['body']
+
+            post_query = Post(title = post_get_title, body = post_get_body, userId = userId)
+
+            db.session.add(post_query)
             db.session.commit()
 
-            result = {"Úspech": f"Článok >>{post['title']}<< bol pridaný."}
+            result = {"Úspech": f"Článok >>{post_get_title}<< bol pridaný."}
             return jsonify(result)
 
-        # result = {"Chyba": "Buď je autor neznýmy, alebo titulok článku je prázdny."}
         result = {"Chyba": "Titulok článku je prázdny."}
         return jsonify(result)
 
-    elif request.method == 'PUT':
-        pass
+    elif request.method == 'PUT': # O
+        post_get = request.get_json()
 
-    elif request.method == 'PATCH':
-        pass
+        if post_get and post_get_id != '':
+            post_get_id = post_get['id']
+            post_get_title = post_get['title']
+            post_get_body = post_get['body']
 
-    elif request.method == 'DELETE':
-        pass
+            post_query = Post.query.filter_by(id = post_get_id, userId = userId).first()
+
+            if post_query is None:
+                result = {"Chyba": f"V repozitári užívateľa >>{userId}<< sa nenachýdza príspevok s identifikátorom >>{post_get_id}<<."}
+                return jsonify(result)
+
+            if post_get_title != '':
+                post_query.title = post_get_title
+
+            if post_get_body != '':
+                post_query.body = post_get_body
+
+            db.session.commit()
+
+            post_query = Post.query.filter_by(id = post_get_id).first()
+            return post_schema.jsonify(post_query)
+
+        result = {"Chyba: Chýba id príspevku."}
+        return jsonify(result)
+
+    elif request.method == 'DELETE': # O
+        post_get = request.get_json()
+        post_get_id = post_get['id']
+
+        post_query = Post.query.filter_by(id = post_get_id, userId = userId).first()
+
+        if post_query is None:
+            result = {"Chyba": f"Príspevok >>{post_get}<< nepatrí užívateľovi >>{userId}<< alebo nie je v databáze."}
+            return jsonify(result)
+
+        db.session.delete(post_query)
+        db.session.commit()
+
+        result = {"Úspech": f"Príspevok >>{post_get_id}<< bol úspešne odstránený."}
+        return jsonify(result)
 
 
-
-
-
-@app.route('/posts/<id>', methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+@app.route('/posts/<id>', methods = ['GET', 'POST', 'PUT', 'DELETE'])
 def post(id):
     """ Využíva metódy:
     'GET': Vráti príspevok na základe id.
         - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
     'POST': Zavolá funkciu pre odstránenie príspevku.
     'PUT': Upravenie príspevku - potrebné validovať userID pomocou externej API
-    'PATCH': Upravenie príspevku - potrebné validovať userID pomocou externej API
     'DELETE': Odstráni príspevok.
     """
-    if request.method == 'GET': # OK
+    if request.method == 'GET': # O
         post = Post.query.get(id)
         return post_schema.jsonify(post)
 
-    elif request.method == 'POST':
-        return
+    elif request.method == 'POST': # O
+        result = {"Info": "Metóda zatiaľ nie je definovaná."}
+        return jsonify(result)
 
-    elif request.method == 'PUT':
-        post = Post.queryfilter_by(id = id).all()
-
-        if title == None or body == None or userId == None:
-            title = request.json['title']
-            body = request.json['body']
-            userId = request.json['userId']
-
-        post.title = title
-        post.body = body
-        post.userId = userId
-
-        db.session.upgrade(post)
-        db.session.commit()
-
-        return post_schema.jsonify(post)
-
-    elif request.method == 'PATCH':
-        post = Post.query.filter_by(id = id).first()
-
-        if request.json['title']:
-            title = request.json['title']
-        if request.json['body']:
-            body = request.json['body']
-        if request.json['userId']:
-            userId = request.json['userId']
-
-        if title is not None:
-            post.title = title
-        if body is not None:
-            post.body = body
-        if userId is not None:
-            post.userId = userId
-
-        db.session.commit()
-
-        return redirect(f"/posts/{id}")
-
-    elif request.method == 'DELETE': # OK
+    elif request.method == 'PUT': # O potrebné validovať userID pomocou externej API
         post_get = request.get_json()
-        get_id = post_get['id']
-        post = Post.query.filter_by(id = get_id).first() # .first_or_404
-        if post is None:
+
+        if post_get:
+            post_get_title = post_get['title']
+            post_get_body = post_get['body']
+            post_get_userId = post_get['userId']
+
+            post_query = Post.query.filter_by(id = id).first()
+
+            if post_get_title != '':
+                post_query.title = post_get_title
+
+            if post_get_body != '':
+                post_query.body = post_get_body
+
+            if post_get_userId != '':
+                post_query.userId = post_get_userId
+
+            db.session.commit()
+
+            post_query = Post.query.filter_by(id = id).first()
+            return post_schema.jsonify(post_query)
+
+        result = {"Chyba: Chýba príkaz k upraveniu príspevku."}
+        return jsonify(result)
+
+    elif request.method == 'DELETE': # O
+        post_get = request.get_json()
+        post_query = Post.query.filter_by(id = id).first()
+
+        if post_query is None:
             result = {"Chyba": f"Príspevok >>{post_get}<< nie je v databáze."}
             return jsonify(result)
 
-        db.session.delete(post)
+        db.session.delete(post_query)
         db.session.commit()
 
-        result = {"Úspech": f"Príspevok >>{post}<< bol úspešne odstránený."}
+        result = {"Úspech": f"Príspevok >>{id}<< bol úspešne odstránený."}
         return jsonify(result)
 
 
