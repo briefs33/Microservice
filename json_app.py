@@ -1,8 +1,7 @@
 import os
-from flask import Flask, make_response, redirect, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
-# from sqlalchemy.inspection import inspect
 
 
 # Init app
@@ -238,7 +237,7 @@ def users():
         return jsonify(result)
 
 
-@app.route('/posts', methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']) # pridať ochrany
+@app.route('/posts', methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
 def posts():
     """ Využíva metódy:
     'GET': Vráti zoznam príspevkov.
@@ -252,11 +251,7 @@ def posts():
         result = posts_schema.dump(posts_query)
         return jsonify(result)
 
-    elif request.method == 'POST': # Query - Chýba validácia! // Databáza nekontroluje cudzí kľúč!
-        # validácia userID pomocou externej API
-        # if not valit:
-        #     return ...
-
+    elif request.method == 'POST':
         post_get = request.get_json()
         try:
             post_get['title']
@@ -407,8 +402,8 @@ def user(userId):
     """ Využíva metódy:
     'GET': Vráti užívateľa na základe userId.
     'POST': Zavolá funkciu na zmenu užívateľských údajov pre HTML.
-    'PUT': Upraví údaje užívateľa. - potrebné validovať userID pomocou externej API ???
-    'PATCH': Upraví údaje užívateľa. - potrebné validovať userID pomocou externej API ???
+    'PUT': Upraví údaje užívateľa.
+    'PATCH': Upraví údaje užívateľa.
     'DELETE': Odstráni užívateľa ale nie jeho články.
     """
     if request.method == 'GET':
@@ -416,8 +411,6 @@ def user(userId):
         return user_schema.jsonify(user_query)
 
     elif request.method == 'POST':
-        """ presmerovanie pre HTML """
-
         result = {"Info": "Metóda zatiaľ nie je definovaná."}
         return jsonify(result)
 
@@ -469,9 +462,8 @@ def user_posts(userId):
     """ Využíva metódy:
     'GET': Vráti zoznam všetkých príspevkov na základe userId.
     'POST': Pridá nový príspevok do databázy a vráti titulok príspevku. Titulok musí byť vyplnený!
-        Pridanie príspevku - potrebné validovať userID pomocou externej API
-    'PUT':
-    'DELETE':
+    'PUT': Upraví príspevok užívateľa.
+    'DELETE': Odstráni príspevok užívateľa.
     """
     if request.method == 'GET':
         posts_query = Post.query.filter_by(userId = userId).all()
@@ -479,10 +471,6 @@ def user_posts(userId):
         return jsonify(result)
 
     elif request.method == 'POST':
-        # validácia userID pomocou externej API
-        # if not valit:
-        #     return ...
-
         post_get = request.get_json()
         try:
             post_get['title']
@@ -560,9 +548,8 @@ def user_posts(userId):
 def post(id):
     """ Využíva metódy:
     'GET': Vráti príspevok na základe id.
-        - ak sa príspevok nenájde v systéme, je potrebné ho dohľadať pomocou externej API a uložiť
     'POST': Metóda zatiaľ nie je definovaná.
-    'PUT': Upraví príspevok na základe id. - potrebné validovať userID pomocou externej API
+    'PUT': Upraví príspevok na základe id.
     'DELETE': Odstráni príspevok.
     """
     if request.method == 'GET':
@@ -573,7 +560,7 @@ def post(id):
         result = {"Info": "Metóda zatiaľ nie je definovaná."}
         return jsonify(result)
 
-    elif request.method == 'PUT': # -  potrebné validovať userID pomocou externej API
+    elif request.method == 'PUT':
         post_get = request.get_json()
         try:
             post_get['title']
